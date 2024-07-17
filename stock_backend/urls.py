@@ -16,7 +16,32 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.urls.conf import include
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
+
+# Swagger配置
+schema_view = get_schema_view(
+    openapi.Info(
+        title="涨停宝 API",
+        default_version='v1',
+        description="描述: API文档",
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny, ],
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
+
+    # ********************************** 管理后台其他自定义接口************************************ #
+    path('v1/', include('apps.users.urls'), name='users'),
+
+    # ********************************** Swagger相关路径************************************ #
+    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

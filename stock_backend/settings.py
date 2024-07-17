@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
+
+from config import DATABASE_ENGINE, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, \
+    DATABASE_CONN_MAX_AGE, DATABASE_CHARSET, REDIS_URL
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'users.UserProfile'
 
 # Application definition
 
@@ -37,7 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.users.apps.UsersConfig',
+    'rest_framework',
+    'drf_yasg',
+    'captcha',
+    'apps.users',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +84,17 @@ WSGI_APPLICATION = 'stock_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': DATABASE_ENGINE,
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
+        'CONN_MAX_AGE':DATABASE_CONN_MAX_AGE,
+        'OPTIONS': {
+                    'charset':DATABASE_CHARSET,
+                    'init_command': 'SET default_storage_engine=INNODB',  # innodb才支持事务
+                }
     }
 }
 
@@ -105,13 +121,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -123,3 +139,129 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ==========================rest_framework配置======================= #
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    )
+}
+# ==========================simplejwt配置======================= #
+SIMPLE_JWT = {
+    # token有效时长
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    # token刷新后的有效时间
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
+    # 设置header字段Authorization的值得前缀： JWT accesstoken字符串
+    "AUTH_HEADER_TYPES": ("Bearer", "JWT",),
+    'ROTATE_REFRESH_TOKENS': True,
+    "USER_ID_FIELD": 'uuid'
+}
+
+# ==========================redis配置======================= #
+# 配置redis缓存
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',  # 缓存后端 Redis
+        # 连接Redis数据库(服务器地址)
+        # 一主带多从(可以配置多个Redis，写走第一台，读走其他的机器)
+        'LOCATION': [
+            f'{REDIS_URL}/0',
+        ],
+        'KEY_PREFIX': 'aiera',  # 项目名当做文件前缀
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',  # 连接选项(默认，不改)
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 512,  # 连接池的连接(最大连接)
+            },
+        }
+    },
+    'session': {  #缓存session
+        'BACKEND': 'django_redis.cache.RedisCache',  # 缓存后端 Redis
+        # 连接Redis数据库(服务器地址)
+        # 一主带多从(可以配置多个Redis，写走第一台，读走其他的机器)
+        'LOCATION': [
+            f'{REDIS_URL}/1',
+        ],
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',  # 连接选项(默认，不改)
+        }
+    },
+    'verify_codes': {  #缓存短信验证码
+        'BACKEND': 'django_redis.cache.RedisCache',  # 缓存后端 Redis
+        # 连接Redis数据库(服务器地址)
+        # 一主带多从(可以配置多个Redis，写走第一台，读走其他的机器)
+        'LOCATION': [
+            f'{REDIS_URL}/2',
+        ],
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',  # 连接选项(默认，不改)
+        }
+    },
+    "carts": {  #登陆过的用户购物车的存储
+        "BACKEND": "django_redis.cache.RedisCache",
+        'LOCATION': [
+            f'{REDIS_URL}/3',
+        ],
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'CONNECTION_POOL_KWARGS': {'decode_responses': True},  # 添加这一行,防止取出的值带有b'' bytes
+        },
+    },
+    "authapi": {  # 接口安全校验（验证接口重复第二次访问会拒绝）
+        'BACKEND': 'django_redis.cache.RedisCache',  # 缓存后端 Redis
+        # 连接Redis数据库(服务器地址)
+        # 一主带多从(可以配置多个Redis，写走第一台，读走其他的机器)
+        'LOCATION': [
+            f'{REDIS_URL}/4',
+        ],
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',  # 连接选项(默认，不改)
+        }
+    },
+    "singletoken": {  # jwt单用户登录（确保一个账户只有一个地点登录，后一个会顶掉前一个）
+        'BACKEND': 'django_redis.cache.RedisCache',  # 缓存后端 Redis
+        # 连接Redis数据库(服务器地址)
+        # 一主带多从(可以配置多个Redis，写走第一台，读走其他的机器)
+        'LOCATION': [
+            f'{REDIS_URL}/5',
+        ],
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',  # 连接选项(默认，不改)
+            'CONNECTION_POOL_KWARGS': {'decode_responses': True},  # 添加这一行,防止取出的值带有b'' bytes
+        }
+    },
+}
+
+REDIS_TIMEOUT = 7 * 24 * 60 * 60
+CUBES_REDIS_TIMEOUT = 60 * 60
+NEVER_REDIS_TIMEOUT = 365 * 24 * 60 * 60
+
+# ================验证码配置=============== #
+CAPTCHA_STATE = True
+# 验证码字符的长度
+CAPTCHA_LENGTH = 6
+# 验证码的有效时间（分钟）
+CAPTCHA_TIMEOUT = 2
+# 验证码图片的大小（宽度，高度）
+CAPTCHA_IMAGE_SIZE = (200, 80)
+# 验证码字体的大小
+CAPTCHA_FONT_SIZE = 32
+# 验证码文字的颜色
+CAPTCHA_FOREGROUND_COLOR = '#0000ff'
+# 验证码背景的颜色
+CAPTCHA_BACKGROUND_COLOR = '#ffffff'
+CAPTCHA_NOISE_FUNCTIONS = (
+    'captcha.helpers.noise_arcs',  # 线
+    # 'captcha.helpers.noise_dots', # 点
+)
+CAPTCHA_OUTPUT_FORMAT = '%(image)s %(text_field)s %(hidden_field)s '
+# 指定生成验证码的方法。可以选择不同的生成方法，如：文本验证码配置（字母验证码）
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+# 算术验证码配置（加减乘除验证码）
+# CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
