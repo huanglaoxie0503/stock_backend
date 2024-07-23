@@ -26,7 +26,7 @@ class UserManageSerializer(CustomModelSerializer):
 
     class Meta:
         model = Users
-        read_only_fields = ["uuid", "user_id"]
+        read_only_fields = ["id", "uuid", "user_id"]
         exclude = ['password', 'user_permissions', 'groups']
         # extra_kwargs = {
         #     'post': {'required': False},
@@ -50,7 +50,7 @@ class UserManageCreateSerializer(CustomModelSerializer):
     class Meta:
         model = Users
         fields = '__all__'
-        read_only_fields = ["uuid", "user_id"]
+        read_only_fields = ["id", "uuid", "user_id"]
         # exclude = ['role', 'post', 'dept']
         extra_kwargs = {
             # 'post': {'required': False},
@@ -76,7 +76,7 @@ class UserManageUpdateSerializer(CustomModelSerializer):
 
     class Meta:
         model = Users
-        read_only_fields = ["uuid", "user_id"]
+        read_only_fields = ["id", "uuid", "user_id"]
         exclude = ['identity']
         extra_kwargs = {
             # 'post': {'required': False},
@@ -96,12 +96,12 @@ class UsersSerializer(CustomModelSerializer):
 
     class Meta:
         model = Users
-        read_only_fields = ["uuid", "user_id"]
-        # exclude = ['password', 'user_permissions', 'groups']
+        read_only_fields = ["id", "uuid", "user_id"]
+        exclude = ['password', 'user_permissions', 'groups']
         # extra_kwargs = {
         #     'post': {'required': False},
         # }
-        fields = ("name", "gender", "birthday", "email", "mobile")
+        # fields = ("name", "gender", "birthday", "email", "mobile")
 
 
 class UserCreateSerializer(CustomModelSerializer):
@@ -122,7 +122,7 @@ class UserCreateSerializer(CustomModelSerializer):
     class Meta:
         model = Users
         fields = "__all__"
-        read_only_fields = ["uuid", "user_id"]
+        read_only_fields = ["id", "uuid", "user_id"]
 
 
 class UserUpdateSerializer(CustomModelSerializer):
@@ -145,7 +145,7 @@ class UserUpdateSerializer(CustomModelSerializer):
         # 在这个例子中，post 字段被设置为不是必需的 (required=False) 并且是只读的 (read_only=True)。这通常用于控制字段在序列化时的行为。
         # extra_kwargs = {'post': {'required': False, 'read_only': True}}
         # read_only_fields 指定了在序列化时应该是只读的字段列表。在这里，uuid 字段被设置为只读，这意味着在创建或更新对象时，客户端提交的值将被忽略。
-        read_only_fields = ["uuid", "user_id"]
+        read_only_fields = ["id", "uuid", "user_id"]
 
 
 class LoginSerializer(TokenObtainPairSerializer):
@@ -164,7 +164,7 @@ class LoginSerializer(TokenObtainPairSerializer):
     class Meta:
         model = Users
         fields = "__all__"
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "uuid", "user_id"]
 
     default_error_messages = {
         'no_active_account': '该账号已被禁用,请联系管理员'
@@ -221,8 +221,12 @@ class LoginSerializer(TokenObtainPairSerializer):
             data = super().validate(attrs)
             refresh = self.get_token(self.user)
 
+            data['id'] = self.user.id
+            data['uuid'] = self.user.uuid
+            data['user_id'] = self.user.user_id
             data['name'] = self.user.name
-            data['userId'] = self.user.uuid
+            data['mobile'] = self.user.mobile
+            data['username'] = self.user.username
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
             request = self.context.get('request')
@@ -232,7 +236,7 @@ class LoginSerializer(TokenObtainPairSerializer):
             # 缓存用户的jwt token
             if IS_SINGLE_TOKEN:
                 redis_conn = get_redis_connection("single_token")
-                k = "aiera-single-token{}".format(user.id)
+                k = "stock-single-token{}".format(user.id)
                 TOKEN_EXPIRE_CONFIG = getattr(settings, 'SIMPLE_JWT', None)
                 if TOKEN_EXPIRE_CONFIG:
                     TOKEN_EXPIRE = TOKEN_EXPIRE_CONFIG['ACCESS_TOKEN_LIFETIME']

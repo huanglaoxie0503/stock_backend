@@ -27,7 +27,6 @@ class UserProfile(AbstractUser, CoreModel):
         (2, "前端用户"),
         (3, "游客用户"),
     )
-    user_id = models.CharField(max_length=30, verbose_name="用户ID", help_text='用户ID')
     name = models.CharField(max_length=30, null=True, blank=True, verbose_name="姓名", help_text='姓名')
     mobile = models.CharField(max_length=11, verbose_name="手机号码", help_text='手机号码')
     email = models.EmailField(max_length=100, null=True, blank=True, verbose_name="邮箱", help_text='邮箱')
@@ -57,7 +56,7 @@ class Counter(models.Model):
     @classmethod
     def next_id(cls, role):
         counter, created = cls.objects.get_or_create(role=role)
-        next_id = f'{role}-{counter.count:09d}'  # 7位数字，不足的地方补0
+        next_id = f'{role}-{counter.count:09d}'  # 9位数字，不足的地方补0
         counter.count += 1
         counter.save()
         return next_id
