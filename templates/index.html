@@ -1,10 +1,308 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>首页</title>
-  </head>
-  <body>
-    <div id="app"></div>
-  <script type="text/javascript" src="/static/index.entry.js"></script></body>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>涨停宝</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        header {
+            background-color: #FF0000;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+            transition: all 0.5s ease;
+        }
+        main {
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+        .content, .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            display: none;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #FF0000;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            transition: all 0.5s ease;
+        }
+        .form-container.active, .content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FF0000;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #D00000;
+        }
+        .form-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .form-links a {
+            color: #FF0000;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>涨停宝</h1>
+    </header>
+    <main>
+        <div class="content active" id="main-content">
+            <h2>欢迎来到涨停宝</h2>
+            <p>涨停宝是一款专注于股票涨停信息的软件，为您提供最新、最全面的涨停数据分析。</p>
+            <h3>功能介绍</h3>
+            <ul>
+                <li>实时涨停数据</li>
+                <li>历史涨停记录查询</li>
+                <li>涨停分析与预测</li>
+                <li>个股涨停提醒</li>
+            </ul>
+            <h3>联系我们</h3>
+            <p>如有任何问题或建议，请通过以下方式联系我们：</p>
+            <p>邮箱: support@zhangtingbao.com</p>
+            <p>电话: 123-456-7890</p>
+            <div class="form-links">
+                <a href="#" onclick="showForm('login-form')">登录</a>
+                <a href="#" onclick="showForm('register-form')">注册</a>
+            </div>
+        </div>
+
+        <div class="form-container" id="login-form">
+            <h2>登录</h2>
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="login()">登录</button>
+            </div>
+            <div class="form-links">
+                <a href="#" onclick="showForm('sms-login-form')">短信登录</a>
+                <a href="#" onclick="showForm('register-form')">注册</a>
+                <a href="#" onclick="showForm('forgot-password-form')">找回密码</a>
+            </div>
+        </div>
+
+        <div class="form-container" id="sms-login-form">
+            <h2>短信登录</h2>
+            <div class="form-group">
+                <label for="phone">手机号</label>
+                <input type="text" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="sms-code">验证码</label>
+                <input type="text" id="sms-code" name="sms-code">
+                <button type="button" onclick="sendSmsCode()">发送验证码</button>
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="smsLogin()">登录</button>
+            </div>
+            <div class="form-links">
+                <a href="#" onclick="showForm('login-form')">密码登录</a>
+                <a href="#" onclick="showForm('register-form')">注册</a>
+                <a href="#" onclick="showForm('forgot-password-form')">找回密码</a>
+            </div>
+        </div>
+
+        <div class="form-container" id="register-form">
+            <h2>注册</h2>
+            <div class="form-group">
+                <label for="new-username">用户名</label>
+                <input type="text" id="new-username" name="new-username">
+            </div>
+            <div class="form-group">
+                <label for="new-password">密码</label>
+                <input type="password" id="new-password" name="new-password">
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">确认密码</label>
+                <input type="password" id="confirm-password" name="confirm-password">
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="register()">注册</button>
+            </div>
+            <div class="form-links">
+                <a href="#" onclick="showForm('login-form')">登录</a>
+                <a href="#" onclick="showForm('sms-login-form')">短信登录</a>
+                <a href="#" onclick="showForm('forgot-password-form')">找回密码</a>
+            </div>
+        </div>
+
+        <div class="form-container" id="forgot-password-form">
+            <h2>找回密码</h2>
+            <div class="form-group">
+                <label for="forgot-username">用户名</label>
+                <input type="text" id="forgot-username" name="forgot-username">
+            </div>
+            <div class="form-group">
+                <label for="forgot-phone">手机号</label>
+                <input type="text" id="forgot-phone" name="forgot-phone">
+                <button type="button" onclick="sendForgotSmsCode()">发送验证码</button>
+            </div>
+            <div class="form-group">
+                <label for="forgot-sms-code">验证码</label>
+                <input type="text" id="forgot-sms-code" name="forgot-sms-code">
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="resetPassword()">重置密码</button>
+            </div>
+            <div class="form-links">
+                <a href="#" onclick="showForm('login-form')">登录</a>
+                <a href="#" onclick="showForm('sms-login-form')">短信登录</a>
+                <a href="#" onclick="showForm('register-form')">注册</a>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 涨停宝. 保留所有权利.</p>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        function showForm(formId) {
+            document.querySelectorAll('.form-container, .content').forEach(function(form) {
+                form.classList.remove('active');
+            });
+            document.getElementById(formId).classList.add('active');
+        }
+
+        async function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const response = await fetch(`${API_BASE_URL}/api/login/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+        alert('登录成功');
+        console.log('Access Token:', data.access);
+        console.log('Refresh Token:', data.refresh);
+    } else {
+        alert('登录失败: ' + data.detail);
+    }
+}
+
+        async function smsLogin() {
+            const phone = document.getElementById('phone').value;
+            const code = document.getElementById('sms-code').value;
+
+            const response = await fetch('${API_BASE_URL}/api/sms-login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone, code }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('短信登录成功');
+                console.log('Access Token:', data.access);
+                console.log('Refresh Token:', data.refresh);
+            } else {
+                alert('短信登录失败: ' + data.detail);
+            }
+        }
+
+        async function sendSmsCode() {
+            const phone = document.getElementById('phone').value;
+
+            // 这里可以调用相应的API来发送验证码
+            alert('验证码已发送');
+        }
+
+        async function register() {
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('密码不匹配');
+                return;
+            }
+
+            const response = await fetch('${API_BASE_URL}/api/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('注册成功');
+            } else {
+                alert('注册失败: ' + data.detail);
+            }
+        }
+
+        async function sendForgotSmsCode() {
+            const username = document.getElementById('forgot-username').value;
+            const phone = document.getElementById('forgot-phone').value;
+
+            // 这里可以调用相应的API来发送找回密码验证码
+            alert('找回密码验证码已发送');
+        }
+
+        async function resetPassword() {
+            const username = document.getElementById('forgot-username').value;
+            const phone = document.getElementById('forgot-phone').value;
+            const code = document.getElementById('forgot-sms-code').value;
+
+            // 这里可以调用相应的API来重置密码
+            alert('密码已重置');
+        }
+    </script>
+</body>
 </html>
