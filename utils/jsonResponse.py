@@ -2,138 +2,165 @@
 # -*- coding: UTF-8 -*-
 # @Date  : 2024-07-15
 # @Desc :自定义的JsonResponse文件
+from enum import Enum
+from typing import Any, Optional, Dict, Union, List
 from rest_framework.response import Response
+
+from .codes import HTTP_STATUS_CODES, StatusCodes
 
 
 class BaseResponse(Response):
     """
-    基础响应类，定义通用的响应结构
+    基础响应类，用于构建所有API响应的基础结构。
     """
 
-    def __init__(self, code, data=None, msg='success', status=None, template_name=None, headers=None, exception=False, content_type=None):
-        std_data = {
+    def __init__(
+            self,
+            code: int,
+            data: Optional[Any] = None,
+            message: str = 'success',
+            http_status: Optional[int] = None,
+            template_name: Optional[str] = None,
+            headers: Optional[Dict[str, str]] = None,
+            exception: bool = False,
+            content_type: Optional[str] = None
+    ):
+        response_data = {
             "code": code,
-            "data": data,
-            "msg": msg
+            "message": message,
+            "data": data
         }
-        super().__init__(std_data, status, template_name, headers, exception, content_type)
+        http_status = http_status or HTTP_STATUS_CODES.get(code, 200)
+        super().__init__(response_data, status=http_status, template_name=template_name, headers=headers,
+                         exception=exception, content_type=content_type)
 
 
 class SuccessResponse(BaseResponse):
     """
-    标准响应成功的返回, SuccessResponse(data)或者SuccessResponse(data=data)
-    - 默认code返回2000, 不支持指定其他返回码
+    成功响应类，用于构建成功的API响应。
     """
 
-    def __init__(self, data=None, msg='success', status=None, template_name=None, headers=None, exception=False, content_type=None, page=1, limit=1, total=None):
-        total = total if data else 0
-        data = {
-            "page": page,
-            "limit": limit,
-            "total": total,
-            "data": data
-        }
-        super().__init__(2000, data, msg, status, template_name, headers, exception, content_type)
+    def __init__(
+            self,
+            data: Optional[Any] = None,
+            message: str = '操作成功',
+            http_status: Optional[int] = None,
+            template_name: Optional[str] = None,
+            headers: Optional[Dict[str, str]] = None,
+            exception: bool = False,
+            content_type: Optional[str] = None
+    ):
+        # 设置响应状态码为成功
+        code = StatusCodes.OK.value
 
+        # 如果没有指定HTTP状态码，则使用默认的HTTP_OK
+        http_status = http_status or HTTP_STATUS_CODES[200]
 
-class DetailResponse(BaseResponse):
-    """
-    不包含分页信息的接口返回, 主要用于单条数据查询
-    - 默认code返回2000, 不支持指定其他返回码
-    """
-
-    def __init__(self, data=None, msg='success', status=None, template_name=None, headers=None, exception=False, content_type=None):
-        super().__init__(2000, data, msg, status, template_name, headers, exception, content_type)
+        # 调用基类构造函数
+        super().__init__(
+            code=code,
+            data=data,
+            message=message,
+            http_status=http_status,
+            template_name=template_name,
+            headers=headers,
+            exception=exception,
+            content_type=content_type
+        )
 
 
 class ErrorResponse(BaseResponse):
     """
-    标准响应错误的返回, ErrorResponse(msg='xxx')
-    - 默认错误码返回400, 也可以指定其他返回码: ErrorResponse(code=xxx)
+    错误响应类，用于构建错误的API响应。
     """
 
-    def __init__(self, msg='error', code=400, data=None, status=None, template_name=None, headers=None, exception=False, content_type=None):
-        super().__init__(code, data, msg, status, template_name, headers, exception, content_type)
+    def __init__(
+            self,
+            error_message: str,
+            data: Optional[Any] = None,
+            http_status: Optional[int] = None,
+            template_name: Optional[str] = None,
+            headers: Optional[Dict[str, str]] = None,
+            exception: bool = False,
+            content_type: Optional[str] = None
+    ):
+        # 设置响应状态码为错误
+        code = StatusCodes.BAD_REQUEST.value
 
-# from rest_framework.response import Response
-#
-#
-# class SuccessResponse(Response):
-#     """
-#     标准响应成功的返回, SuccessResponse(data)或者SuccessResponse(data=data)
-#         -默认code返回2000, 不支持指定其他返回码
-#     """
-#
-#     def __init__(
-#             self, data=None,
-#             msg='success',
-#             status=None,
-#             template_name=None,
-#             headers=None,
-#             exception=False,
-#             content_type=None,
-#             page=1,
-#             limit=1,
-#             total=1
-#     ):
-#         if not data:
-#             total = 0
-#         std_data = {
-#             "code": 2000,
-#             "data": {
-#                 "page": page,
-#                 "limit": limit,
-#                 "total": total,
-#                 "data": data
-#             },
-#             "msg": msg
-#         }
-#         super().__init__(std_data, status, template_name, headers, exception, content_type)
-#
-#
-# class DetailResponse(Response):
-#     """
-#     不包含分页信息的接口返回,主要用于单条数据查询
-#     - 默认code返回2000, 不支持指定其他返回码
-#     """
-#
-#     def __init__(
-#             self,
-#             data=None,
-#             msg='success',
-#             status=None,
-#             template_name=None,
-#             headers=None,
-#             exception=False,
-#             content_type=None
-#     ):
-#         std_data = {
-#             "code": 2000,
-#             "data": data,
-#             "msg": msg
-#         }
-#         super().__init__(std_data, status, template_name, headers, exception, content_type)
-#
-#
-# class ErrorResponse(Response):
-#     """
-#     标准响应错误的返回,ErrorResponse(msg='xxx')
-#     - 默认错误码返回400, 也可以指定其他返回码:ErrorResponse(code=xxx)
-#     """
-#
-#     def __init__(self,
-#                  data=None,
-#                  msg='error',
-#                  code=400,
-#                  status=None,
-#                  template_name=None,
-#                  headers=None,
-#                  exception=False,
-#                  content_type=None
-#                  ):
-#         std_data = {
-#             "code": code,
-#             "data": data,
-#             "msg": msg
-#         }
-#         super().__init__(std_data, status, template_name, headers, exception, content_type)
+        # 如果没有指定HTTP状态码，则使用默认的HTTP_BAD_REQUEST
+        http_status = http_status or HTTP_STATUS_CODES[400]
+
+        # 调用基类构造函数
+        super().__init__(
+            code=code,
+            data=data,
+            message=error_message,
+            http_status=http_status,
+            template_name=template_name,
+            headers=headers,
+            exception=exception,
+            content_type=content_type
+        )
+
+
+class DetailResponse(BaseResponse):
+    """
+    详情响应类，用于返回单条数据查询的结果。
+    此类不包含分页信息，主要用于单条数据的查询响应。
+    默认的code返回为Success (2000)，不支持指定其他返回码。
+    """
+
+    def __init__(self,
+                 data: Optional[Any] = None,
+                 msg: str = 'success',
+                 status: Optional[int] = None,
+                 template_name: Optional[str] = None,
+                 headers: Optional[Dict[str, str]] = None,
+                 exception: bool = False,
+                 content_type: Optional[str] = None):
+        # 使用枚举中的OK状态码作为默认code
+        code = StatusCodes.OK.value
+
+        # 调用基类构造函数，传入默认的code和其他参数
+        super().__init__(code=code,
+                         data=data,
+                         message=msg,
+                         http_status=status,
+                         template_name=template_name,
+                         headers=headers,
+                         exception=exception,
+                         content_type=content_type)
+
+
+class NotFoundResponse(BaseResponse):
+    """
+    未找到响应类，用于构建资源未找到的API响应。
+    """
+
+    def __init__(
+            self,
+            not_found_message: str,
+            data: Optional[Any] = None,
+            http_status: Optional[int] = None,
+            template_name: Optional[str] = None,
+            headers: Optional[Dict[str, str]] = None,
+            exception: bool = False,
+            content_type: Optional[str] = None
+    ):
+        # 设置响应状态码为未找到
+        code = StatusCodes.NOT_FOUND.value
+
+        # 如果没有指定HTTP状态码，则使用默认的HTTP_NOT_FOUND
+        http_status = http_status or HTTP_STATUS_CODES[404]
+
+        # 调用基类构造函数
+        super().__init__(
+            code=code,
+            data=data,
+            message=not_found_message,
+            http_status=http_status,
+            template_name=template_name,
+            headers=headers,
+            exception=exception,
+            content_type=content_type
+        )

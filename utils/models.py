@@ -23,11 +23,8 @@ class CoreModel(models.Model):
     增加审计字段, 覆盖字段时, 字段名称请勿修改, 必须统一审计字段名称
     """
     id = models.AutoField(primary_key=True, verbose_name="ID", help_text="自增ID")
-    uuid = models.UUIDField(default=make_guid, editable=False, unique=True, verbose_name="UUID", help_text="UUID")
-    user_id = models.CharField(max_length=15, verbose_name="用户ID", help_text='用户ID')
+    user_id = models.UUIDField(default=make_guid, editable=False, unique=True, verbose_name="UUID", help_text="UUID")
     description = models.CharField(max_length=100, null=True, blank=True, verbose_name="描述", help_text="描述")
-    creator = models.ForeignKey(to=settings.AUTH_USER_MODEL, related_query_name='creator_query', null=True, verbose_name='创建人', help_text="创建人", on_delete=models.SET_NULL, db_constraint=False)
-    modifier = models.CharField(max_length=100, null=True, blank=True, verbose_name="修改人", help_text="修改人")
     create_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="创建时间", help_text="创建时间")
     update_datetime = models.DateTimeField(auto_now=True, null=True, blank=True, verbose_name="修改时间", help_text="修改时间")
 

@@ -16,27 +16,19 @@ class UserProfile(AbstractUser, CoreModel):
         (0, "女"),
         (1, "男"),
     )
-    ROLE_CHOICES = (
-        ('emp', 'employee'),  # 员工
-        ('cus', 'customer'),  # 客户
-        ('vis', 'visitor'),  # 游客
-    )
     IDENTITY_CHOICES = (
         (0, "超级管理员"),
         (1, "系统管理员"),
         (2, "前端用户"),
-        (3, "游客用户"),
     )
     name = models.CharField(max_length=30, null=True, blank=True, verbose_name="姓名", help_text='姓名')
     mobile = models.CharField(max_length=11, verbose_name="手机号码", help_text='手机号码')
     email = models.EmailField(max_length=100, null=True, blank=True, verbose_name="邮箱", help_text='邮箱')
     birthday = models.DateField(null=True, blank=True, verbose_name="出生年月", help_text='出生年月')
-    gender = models.SmallIntegerField(choices=GENDER_CHOICES, null=True, blank=True, verbose_name="性别",
-                                      help_text="性别")
+    gender = models.SmallIntegerField(choices=GENDER_CHOICES, null=True, blank=True, verbose_name="性别",help_text="性别")
     # 自定义
-    identity = models.SmallIntegerField(choices=IDENTITY_CHOICES, verbose_name="身份标识", null=True, blank=True,
-                                        default=2, help_text="身份标识")
-    role = models.CharField(max_length=3, choices=ROLE_CHOICES, verbose_name='角色', help_text='角色')
+    identity = models.SmallIntegerField(choices=IDENTITY_CHOICES, verbose_name="身份标识", null=True, blank=True, default=2, help_text="身份标识")
+    permissions = models.JSONField(default=list, verbose_name="权限列表", help_text="权限列表")
     is_delete = models.BooleanField(default=False, verbose_name="是否逻辑删除", help_text="是否逻辑删除")
 
     class Meta:

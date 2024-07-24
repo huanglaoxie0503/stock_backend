@@ -9,10 +9,17 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from captcha.views import CaptchaStore, captcha_image
 
 from utils.filters import UsersManageTimeFilter
-from .serializers import UserManageSerializer, UserManageCreateSerializer, UserManageUpdateSerializer, LoginSerializer, \
-    UsersSerializer, UserCreateSerializer, UserUpdateSerializer
 from utils.viewset import CustomModelViewSet
-from utils.jsonResponse import SuccessResponse, ErrorResponse, DetailResponse
+from utils.jsonResponse import SuccessResponse, ErrorResponse
+from .serializers import (
+    UserManageSerializer,
+    UserManageCreateSerializer,
+    UserManageUpdateSerializer,
+    LoginSerializer,
+    UsersSerializer,
+    UserCreateSerializer,
+    UserUpdateSerializer
+)
 
 # Create your views here.
 Users = get_user_model()
@@ -42,9 +49,9 @@ class UserManageViewSet(CustomModelViewSet):
             else:
                 instance.is_active = True
             instance.save()
-            return SuccessResponse(data=None, msg="修改成功")
+            return SuccessResponse(data=None, message="修改成功")
         else:
-            return ErrorResponse(msg="未获取到用户")
+            return ErrorResponse(error_message="未获取到用户")
 
 
 class UsersViewSet(CustomModelViewSet):
@@ -74,7 +81,7 @@ class UsersViewSet(CustomModelViewSet):
             'email': user.email,
             'gender': user.gender,
         }
-        return SuccessResponse(data=result, msg='获取成功')
+        return SuccessResponse(data=result, message='获取成功')
 
     @staticmethod
     def update_user_info(request):
@@ -83,7 +90,7 @@ class UsersViewSet(CustomModelViewSet):
         """
         user = request.user
         Users.objects.get(id=user.id).update(**request.data)
-        return SuccessResponse(data=None, msg='修改成功')
+        return SuccessResponse(data=None, message='修改成功')
 
     @staticmethod
     def change_password(request):
@@ -98,15 +105,15 @@ class UsersViewSet(CustomModelViewSet):
         new_password_2 = data.get('new_password_2')
         if instance:
             if new_password != new_password_2:
-                return ErrorResponse(msg='2次密码不匹配')
+                return ErrorResponse(error_message='2次密码不匹配')
             elif instance.check_password(old_password):
                 instance.password = make_password(new_password)
                 instance.save()
-                return SuccessResponse(data=None, msg='修改成功')
+                return SuccessResponse(data=None, message='修改成功')
             else:
-                return ErrorResponse(msg='旧密码不正确')
+                return ErrorResponse(error_message='旧密码不正确')
         else:
-            return ErrorResponse(msg='未获取到用户')
+            return ErrorResponse(error_message='未获取到用户')
 
 
 class LoginView(TokenObtainPairView):
