@@ -13,7 +13,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from config import REGEX_MOBILE
+from config import REGEX_MOBILE, ALI_YUN_SMS_SIGN, ALI_YUM_SMS_TEMPLATE
 from utils.aliyun_sms import send_sms
 from utils.common import get_parameter_dic
 from .serializers import MobilePasswordLoginSerializer, MobileSmsLoginSerializer, SmsSerializer
@@ -245,6 +245,6 @@ class MobileRegisterView(APIView):
             if str(send_flag.decode()) != str(code):
                 return ErrorResponse(error_message="验证码错误")
             # 开始注册
-            Users.objects.create(username=mobile, password=make_password(password), mobile=mobile, is_staff=False,identity=2)
+            Users.objects.create(username=mobile, password=make_password(password), mobile=mobile, is_staff=False, identity=2)
             redis_conn.delete('sms_%s' % mobile)
             return DetailResponse(data=mobile, msg="注册成功")

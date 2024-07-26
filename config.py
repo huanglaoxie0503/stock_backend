@@ -28,7 +28,14 @@ DATABASE_CHARSET = "utf8mb4"
 # 数据库长连接时间（默认为0，单位秒）即每次请求都重新连接,debug模式下该值应该写为0 ，mysql默认长连接超时时间为8小时
 DATABASE_CONN_MAX_AGE = 0  # 推荐120（2分钟），使用 None 则是无限的持久连接（不推荐）。
 
+# ======================Redis 配置=========================== #
 REDIS_PASSWORD = 'oscar&0503'
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = '6379'
 REDIS_URL = f'redis://:{REDIS_PASSWORD or ""}@{REDIS_HOST}:{REDIS_PORT}'
+
+# ====================== 阿里云发送短信 配置=========================== #
+ALI_YUN_SMS_ACCESS_KEY_ID = ""
+ALI_YUN_SMS_ACCESS_KEY_SECRET = ""
+ALI_YUN_SMS_SIGN = '测试'  # 短信签名名称
+ALI_YUM_SMS_TEMPLATE = 'SMS_302035344'  # 模板code

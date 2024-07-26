@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 # @Date  : 2024-07-17
 # @Desc :
+import re
 from datetime import datetime, timedelta
 
 from captcha.models import CaptchaStore
@@ -11,8 +12,9 @@ from django_redis import get_redis_connection
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from config import IS_SINGLE_TOKEN
+from config import IS_SINGLE_TOKEN, REGEX_MOBILE
 from stock_backend import settings
+from utils.common import ast_convert
 from utils.serializers import CustomModelSerializer
 from utils.validator import CustomValidationError, CustomUniqueValidator
 
@@ -253,3 +255,116 @@ class LoginSerializer(TokenObtainPairSerializer):
                 "data": None
             }
         return result
+
+
+# =======================前端用户登录 Serializer========================== #
+
+
+class SmsSerializer(serializers.Serializer):
+    """
+    发送短信序列化器
+    """
+    mobile = serializers.CharField(max_length=11, min_length=11, required=True, help_text="手机号")
+    # sms_type = serializers.CharField(max_length=10, required=True, help_text="请求类型：login/register/restpass/rebind")
+
+    def validated_mobile(self, mobile):
+        # 手机号验证
+        if not re.match(REGEX_MOBILE, mobile):
+            raise serializers.ValidationError("手机号码非法", 4000)
+        if self.context["sms_type"] == "register":
+            # 是否已注册
+            if Users.objects.filter(mobile=mobile).count():
+                raise serializers.ValidationError("该手机号已注册", 4000)
+        if self.context['sms_type'] == "restpass" or self.context['sms_type'] == "login":  # 重置密码/用户登录
+            # 该手机号是否已注册
+            if not Users.objects.filter(username=mobile, identity=2, is_active=True).count():
+                raise serializers.ValidationError("没有找到该用户或已禁用", 4000)
+
+        if self.context['sms_type'] == "wxbind":  # 微信绑定
+            # 该手机号是否已注册
+            if not Users.objects.filter(username=mobile, mobile=mobile, identity=2, is_active=True,
+                                        oauthwxuser__isnull=True).count():
+                raise serializers.ValidationError("没有找到该用户或该用户已绑定微信", 4000)
+
+        if self.context['sms_type'] == "rebind":  # 换绑手机号，前提用户已经登录
+            # 是否跟原来绑定过的号码一致
+            queryset = Users.objects.filter(id=self.context['request'].user.id)
+            if not queryset:
+                raise serializers.ValidationError("该用户不存在", 4000)
+            if queryset[0].mobile == mobile:
+                raise serializers.ValidationError("请使用新的手机号绑定", 4000)
+            if Users.objects.filter(mobile=mobile).count():
+                raise serializers.ValidationError("该手机号已被其他用户绑定", 4000)
+
+        return mobile
+
+
+class MobilePasswordLoginSerializer(TokenObtainPairSerializer):
+    """
+    手机+密码登录的序列化器
+        - 重写djangorestframework-simplejwt的序列化器
+    """
+    default_error_messages = {
+        'no_active_account': _('该账号已被禁用,请联系管理员')
+    }
+
+    def validate(self, attrs):
+        mobile = attrs['username']
+        if not re.match(REGEX_MOBILE, mobile):
+            result = {
+                "code": 4000,
+                "msg": '请输入正确的手机号',
+                "data": None
+            }
+            return result
+        password = attrs['password']
+        user = Users.objects.filter(username=mobile, identity=2).first()
+        if user and not user.is_active:
+            result = {
+                "code": 4000,
+                "msg": "该账号已被禁用,请联系管理员",
+                "data": None
+            }
+            return result
+        if user and user.check_password(password):
+            data = {}
+            refresh = self.get_token(user)
+            data['identity'] = ast_convert(user.identity)
+            data['userId'] = user.uuid
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
+            result = {
+                "code": 2000,
+                "msg": "登录成功",
+                "data": {
+                    "page": 1,
+                    "limit": 1,
+                    "total": 1,
+                    "data": data
+                },
+            }
+        else:
+            result = {
+                "code": 4000,
+                "msg": "账号/密码不正确",
+                "data": None
+            }
+        return result
+
+
+class MobileSmsLoginSerializer(TokenObtainPairSerializer):
+    """
+    手机+短信登录的序列化器:
+    重写djangorestframework-simplejwt的序列化器
+    """
+
+    @classmethod
+    def get_token(cls, user):
+        refresh = super(MobileSmsLoginSerializer, cls).get_token(user)
+        data = {
+            'identity': ast_convert(user.identity),
+            'userId': user.uuid,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        }
+        return data
