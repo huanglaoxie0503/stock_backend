@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap3',
     'xadmin',
     'apps.users',
+    "apps.base_data"
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

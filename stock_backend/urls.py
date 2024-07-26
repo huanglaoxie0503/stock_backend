@@ -54,6 +54,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # ********************************** 管理后台其他自定义接口************************************ #
-    path('v1/', include('apps.users.urls'), name='users'),
+    path('v1/api/', include('apps.users.urls'), name='users'),
+    path('v1/api/', include('apps.base_data.urls'), name='base_data'),
 
 ]

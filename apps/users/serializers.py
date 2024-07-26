@@ -9,6 +9,7 @@ from captcha.models import CaptchaStore
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django_redis import get_redis_connection
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 

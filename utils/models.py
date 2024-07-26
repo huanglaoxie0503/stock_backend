@@ -40,7 +40,6 @@ class BaseModel(models.Model):
         auto_now_add=True：对象第一次创建时自动设置字段为当前时间。
     """
     id = models.AutoField(primary_key=True, verbose_name="ID", help_text="自增ID")
-    uuid = models.UUIDField(default=make_guid, editable=False, unique=True, verbose_name="UUID", help_text="UUID")
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
     update_datetime = models.DateTimeField(auto_now=True, verbose_name='更新时间', help_text='更新时间')
 
