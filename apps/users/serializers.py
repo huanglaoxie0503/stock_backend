@@ -54,7 +54,6 @@ class UserManageCreateSerializer(CustomModelSerializer):
         model = Users
         fields = '__all__'
         read_only_fields = ["id", "uuid", "user_id"]
-        # exclude = ['role', 'post', 'dept']
         extra_kwargs = {
             # 'post': {'required': False},
             # 'role': {'required': False},

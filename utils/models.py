@@ -8,6 +8,8 @@ from django.db import models
 
 from stock_backend import settings
 
+table_prefix = 'stock_'
+
 
 def make_guid():
     # 生成一个 UUID 对象
