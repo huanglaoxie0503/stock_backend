@@ -47,43 +47,47 @@ class Command(BaseCommand):
             # 关闭数据库连接
             connection.close()
 
-    def get_db_connection(self, options):
+    @staticmethod
+    def get_db_connection(options):
         # 获取数据库连接
         database = options['database']
         connection = connections[database]
         connection.prepare_database()
         return connection
 
-    def is_field_type_to_be_processed(self, field):
+    @staticmethod
+    def is_field_type_to_be_processed(field):
         # 判断字段类型是否需要处理
         return field.get_internal_type() not in ["AutoField", "ForeignKey"]
 
-    def get_comment_text(self, field, db_column):
+    @staticmethod
+    def get_comment_text(field, db_column):
         # 获取字段注释文本
         comment_text = field.verbose_name or field.help_text
         if not comment_text or comment_text == db_column.replace("_", " ").strip():
             return None
         return comment_text
 
-    def add_comments(self, cursor, connection, custom_models, add_comment_method):
+    @staticmethod
+    def add_comments(cursor, connection, custom_models, add_comment_method):
         # 处理所有模型，添加注释
         processed_tables = set()
-        for modelobj in custom_models:
-            if not modelobj._meta.managed:
+        for model_obj in custom_models:
+            if not model_obj._meta.managed:
                 continue
-            table_name = modelobj._meta.db_table
+            table_name = model_obj._meta.db_table
             if table_name in processed_tables:
                 continue
             # 调用特定数据库类型的注释添加方法
-            add_comment_method(cursor, connection, modelobj)
+            add_comment_method(cursor, connection, model_obj)
             processed_tables.add(table_name)
             # 提交事务
             connection.commit()
 
-    def mysql_add_comment(self, cursor, connection, modelobj):
+    def mysql_add_comment(self, cursor, connection, model_obj):
         # 为MySQL数据库添加注释
-        table_name = modelobj._meta.db_table
-        fields = modelobj._meta.fields
+        table_name = model_obj._meta.db_table
+        fields = model_obj._meta.fields
         for field in fields:
             db_column = field.db_column or field.name
             if not self.is_field_type_to_be_processed(field):
@@ -103,7 +107,7 @@ class Command(BaseCommand):
                 logger.error(f"未能为 {table_name}.{db_column} 添加注释: {e}")
 
         # 添加表注释
-        table_comment = modelobj._meta.verbose_name
+        table_comment = model_obj._meta.verbose_name
         if table_comment:
             try:
                 cursor.execute(f"ALTER TABLE `{table_name}` COMMENT=%s;", (table_comment,))
@@ -111,10 +115,10 @@ class Command(BaseCommand):
             except Exception as e:
                 logger.error(f"未能为表 {table_name} 添加注释: {e}")
 
-    def postgresql_add_comment(self, cursor, connection, modelobj):
+    def postgresql_add_comment(self, cursor, model_obj):
         # 为PostgreSQL数据库添加注释
-        table_name = modelobj._meta.db_table
-        fields = modelobj._meta.fields
+        table_name = model_obj._meta.db_table
+        fields = model_obj._meta.fields
         for field in fields:
             db_column = field.db_column or field.name
             if not self.is_field_type_to_be_processed(field):
@@ -132,7 +136,7 @@ class Command(BaseCommand):
                 logger.error(f"未能为{table_name}.{db_column}添加注释: {e}")
 
         # 添加表注释
-        table_comment = modelobj._meta.verbose_name
+        table_comment = model_obj._meta.verbose_name
         if table_comment:
             try:
                 cursor.execute(f"COMMENT ON TABLE {table_name} IS %s;", (table_comment,))
