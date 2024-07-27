@@ -97,19 +97,19 @@ class Command(BaseCommand):
                     f"ALTER TABLE `{table_name}` MODIFY COLUMN `{db_column}` {field.db_type(connection)} COMMENT %s;",
                     (comment_text,))
                 # 输出成功信息
-                self.stdout.write(f"已为{table_name}.{db_column}添加注释: {comment_text}")
+                self.stdout.write(f"已为  {table_name}.{db_column} 添加注释: {comment_text}")
             except Exception as e:
                 # 记录错误信息
-                logger.error(f"未能为{table_name}.{db_column}添加注释: {e}")
+                logger.error(f"未能为 {table_name}.{db_column} 添加注释: {e}")
 
         # 添加表注释
         table_comment = modelobj._meta.verbose_name
         if table_comment:
             try:
                 cursor.execute(f"ALTER TABLE `{table_name}` COMMENT=%s;", (table_comment,))
-                self.stdout.write(f"已为表{table_name}添加注释: {table_comment}")
+                self.stdout.write(f"已为表 {table_name} 添加注释: {table_comment}")
             except Exception as e:
-                logger.error(f"未能为表{table_name}添加注释: {e}")
+                logger.error(f"未能为表 {table_name} 添加注释: {e}")
 
     def postgresql_add_comment(self, cursor, connection, modelobj):
         # 为PostgreSQL数据库添加注释
