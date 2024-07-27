@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'captcha',
     'crispy_forms',
     'crispy_bootstrap3',
+    'auto_add_comments',
     'xadmin',
     'apps.users',
     "apps.base_data"
@@ -105,13 +106,16 @@ DATABASES = {
         'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_HOST,
         'PORT': DATABASE_PORT,
-        'CONN_MAX_AGE':DATABASE_CONN_MAX_AGE,
+        'CONN_MAX_AGE': DATABASE_CONN_MAX_AGE,
         'OPTIONS': {
-                    'charset':DATABASE_CHARSET,
-                    'init_command': 'SET default_storage_engine=INNODB',  # innodb才支持事务
-                }
+                    'charset': DATABASE_CHARSET,
+                    'init_command': "SET default_storage_engine=INNODB, sql_mode='STRICT_TRANS_TABLES'"
+                },
     }
 }
+
+# 配置自定义 SCHEMA_EDITOR_CLASS
+# DATABASES['default']['SCHEMA_EDITOR_CLASS'] = 'utils.db_schema.CustomDatabaseSchemaEditor'
 
 
 # Password validation
