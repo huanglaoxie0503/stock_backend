@@ -27,6 +27,16 @@ class CoreModel(models.Model):
     id = models.AutoField(primary_key=True, verbose_name="自增ID", help_text="自增ID")
     user_id = models.UUIDField(default=make_guid, editable=False, unique=True, verbose_name="UUID", help_text="UUID")
     description = models.CharField(max_length=100, null=True, blank=True, verbose_name="描述", help_text="描述")
+    creator = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,  # 指定关联的模型为用户模型
+        related_query_name='creator_query',  # 设置反向查询名称
+        null=True,  # 允许该字段为空
+        verbose_name='创建人',  # 用于在 Django 管理后台显示的字段名
+        help_text="创建人",  # 用于在 Django 管理后台显示的帮助文本
+        on_delete=models.SET_NULL,  # 当关联的用户被删除时，将该字段设为 NULL
+        db_constraint=False  # 禁用数据库级的外键约束
+    )
+    modifier = models.CharField(max_length=100, null=True, blank=True, verbose_name="修改人", help_text="修改人")
     create_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="创建时间", help_text="创建时间")
     update_datetime = models.DateTimeField(auto_now=True, null=True, blank=True, verbose_name="修改时间", help_text="修改时间")
 
