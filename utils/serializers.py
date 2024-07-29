@@ -20,31 +20,17 @@ class CustomModelSerializer(serializers.ModelSerializer):
     # 修改人姓名的序列化字段, 只读
     modifier_name = serializers.SerializerMethodField(read_only=True)
 
-    @staticmethod
-    def get_modifier_name(instance):
-        """
-        获取修改人的姓名
-        :param instance: 模型实例
-        :return: 修改人的姓名
-        """
-        if not hasattr(instance, 'modifier'):
-            return None
-        queryset = Users.objects.filter(id=instance.modifier).values_list('name', flat=True).first()
-        if queryset:
-            return queryset
-        return None
-
     # 创建人的审计字段名称, 默认 creator, 继承使用时可自定义覆盖
     creator_field_id = 'creator'
     # 创建人姓名的序列化字段, 只读
     creator_name = serializers.SlugRelatedField(slug_field="name", source="creator", read_only=True)
 
     # 数据所属部门字段
-    dept_belong_id_field_name = 'dept_belong_id'
+    # dept_belong_id_field_name = 'dept_belong_id'
 
     # 添加默认时间返回格式
     create_datetime = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
-    update_datetime = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False)
+    update_datetime = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
 
     def __init__(self, instance=None, data=empty, request=None, **kwargs):
         """
@@ -81,8 +67,8 @@ class CustomModelSerializer(serializers.ModelSerializer):
                 if self.creator_field_id in self.fields.fields:
                     validated_data[self.creator_field_id] = self.request.user
                 # 设置所属部门
-                if self.dept_belong_id_field_name in self.fields.fields and not validated_data.get(self.dept_belong_id_field_name, None):
-                    validated_data[self.dept_belong_id_field_name] = getattr(self.request.user, 'dept_id', None)
+                # if self.dept_belong_id_field_name in self.fields.fields and not validated_data.get(self.dept_belong_id_field_name, None):
+                #     validated_data[self.dept_belong_id_field_name] = getattr(self.request.user, 'dept_id', None)
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
@@ -127,4 +113,18 @@ class CustomModelSerializer(serializers.ModelSerializer):
         """
         if getattr(self.request, 'user', None):
             return getattr(self.request.user, 'id', None)
+        return None
+
+    @staticmethod
+    def get_modifier_name(instance):
+        """
+        获取修改人的姓名
+        :param instance: 模型实例
+        :return: 修改人的姓名
+        """
+        if not hasattr(instance, 'modifier'):
+            return None
+        queryset = Users.objects.filter(id=instance.modifier).values_list('name', flat=True).first()
+        if queryset:
+            return queryset
         return None
