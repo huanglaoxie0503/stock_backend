@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'auto_add_comments',
     'xadmin',
     'apps.users',
-    "apps.base_data"
+    "apps.base_data",
+    "apps.stock_picker"
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

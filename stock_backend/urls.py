@@ -40,6 +40,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # path('', home_view, name='home')
     # ********************************** 管理后台系统接口************************************ #
     url(r'^xadmin/', xadmin.site.urls),
     url('^api-auth/', include('rest_framework.urls')),

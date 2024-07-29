@@ -2,19 +2,39 @@
 # -*- coding: UTF-8 -*-
 # @Date  : 2024-07-26
 # @Desc :
-from rest_framework import serializers
+from utils.serializers import CustomModelSerializer
 
-from .models import TradingVolume
+from .models import (
+    TradingVolume,
+    StockLimitUpDetail,
+    StockLimitDownDetail,
+    StockLimitBlast
+)
 
 
-class TradingVolumeSerializer(serializers.ModelSerializer):
+class TradingVolumeSerializer(CustomModelSerializer):
     class Meta:
         model = TradingVolume
         fields = "__all__"
         read_only_fields = ["id"]
 
 
-class TradingVolumeCreateUpdateSerializer(serializers.ModelSerializer):
+class StockLimitUpDetailSerializer(CustomModelSerializer):
     class Meta:
-        model = TradingVolume
-        fields = '__all__'  # 或者你可以列出具体的字段，例如 ['field1', 'field2']
+        model = StockLimitUpDetail
+        fields = "__all__"
+        read_only_fields = ["id"]
+
+
+class StockLimitDownDetailSerializer(CustomModelSerializer):
+    class Meta:
+        model = StockLimitDownDetail
+        fields = "__all__"
+        read_only_fields = ["id"]
+
+
+class StockLimitBlastSerializer(CustomModelSerializer):
+    class Meta:
+        model = StockLimitBlast
+        fields = "__all__"
+        read_only_fields = ["id"]

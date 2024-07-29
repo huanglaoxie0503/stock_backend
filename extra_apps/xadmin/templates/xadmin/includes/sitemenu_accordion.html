@@ -8,7 +8,7 @@
   <div class="panel panel-{% if item.selected %}info{%else%}default{% endif %}">
     <div class="panel-heading">
       <h6 class="panel-title">
-        <span class="badge badge-info">{{ item.menus|length }}</span>
+{#        <span class="badge badge-info">{{ item.menus|length }}</span>#}
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#nav-accordion" href="#nav-panel-{{forloop.counter}}">
           {% if item.url %}<a href="{{ item.url }}" class="section">{% endif %}
           {% if item.icon %}<i class="fa-fw {{item.icon}}"></i>
