@@ -14,7 +14,7 @@ apps/*/migrations/*
 # 确保父目录不被忽略
 !apps/*/migrations/
 
-
+*.out
 # Distribution / packaging
 .Python
 build/
