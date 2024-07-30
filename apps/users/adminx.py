@@ -10,7 +10,7 @@ from apps.base_data.models import (
     StockLimitUpDetail,
     StockLimitDownDetail,
     StockLimitBlast,
-    StockTradeCalendar
+    StockTradeCalendar, StockConditionalPicker
 )
 from apps.stock_picker.models import (
     StockAuction,
@@ -39,9 +39,9 @@ class StockLimitUpDetailAdmin(object):
     search_fields = ['trade_date']
     ordering = ['-trade_date']
     model_icon = 'fa fa-cube'
-    list_per_page = 10
+    list_per_page = 15
     list_display_links = ['trade_date']
-    list_editable = []
+    list_editable = ['limit_up_reasons_hot']
 
 
 class StockLimitDownDetailAdmin(object):
@@ -51,7 +51,7 @@ class StockLimitDownDetailAdmin(object):
     search_fields = ['trade_date']
     ordering = ['-trade_date']
     model_icon = 'fa fa-cube'
-    list_per_page = 10
+    list_per_page = 20
     list_display_links = ['trade_date']
     list_editable = []
 
@@ -63,7 +63,7 @@ class StockLimitBlastAdmin(object):
     search_fields = ['trade_date']
     ordering = ['-trade_date']
     model_icon = 'fa fa-cube'
-    list_per_page = 10
+    list_per_page = 20
 
 
 class TradingVolumeAdmin(object):
@@ -74,6 +74,7 @@ class TradingVolumeAdmin(object):
     list_per_page = 10
     list_display_links = ['trade_date']
     list_editable = []
+    model_icon = 'fa fa-cube'
 
 
 class StockTradeCalendarAdmin(object):
@@ -84,6 +85,18 @@ class StockTradeCalendarAdmin(object):
     readonly_fields = ['trade_date']
     list_per_page = 10
     list_display_links = ['trade_date']
+    model_icon = 'fa fa-cube'
+
+
+class StockConditionalPickerAdmin(object):
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'cond_name', 'pre_close', 'high_price', 'chg', 'cap', 'volume', 'concept']
+    list_filter = ['trade_date']
+    search_fields = ['trade_date']
+    ordering = ['-trade_date']
+    list_per_page = 10
+    list_display_links = ['trade_date']
+    list_editable = []
+    model_icon = 'fa fa-cube'
 
 
 class StockAuctionAdmin(object):
@@ -94,6 +107,7 @@ class StockAuctionAdmin(object):
     list_per_page = 10
     list_display_links = ['trade_date']
     list_editable = []
+    model_icon = 'fa fa-cube'
 
 
 class StockLimitUpAuctionAdmin(object):
@@ -104,6 +118,7 @@ class StockLimitUpAuctionAdmin(object):
     list_per_page = 10
     list_display_links = ['trade_date']
     list_editable = []
+    model_icon = 'fa fa-cube'
 
 
 class StockAuctionConditionsAdmin(object):
@@ -123,6 +138,7 @@ xadmin.site.register(views.CommAdminView, GlobalSettings)
 xadmin.site.register(StockLimitUpDetail, StockLimitUpDetailAdmin)
 xadmin.site.register(StockLimitDownDetail, StockLimitDownDetailAdmin)
 xadmin.site.register(StockLimitBlast, StockLimitBlastAdmin)
+xadmin.site.register(StockConditionalPicker, StockConditionalPickerAdmin)
 xadmin.site.register(TradingVolume, TradingVolumeAdmin)
 xadmin.site.register(StockTradeCalendar, StockTradeCalendarAdmin)
 

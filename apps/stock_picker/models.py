@@ -39,14 +39,10 @@ class StockAuction(BaseModel):
     trade_date = models.DateField(verbose_name="交易日期", help_text="交易日期")
     stock_code = models.CharField(max_length=20, verbose_name="股票代码", help_text="股票代码")
     stock_name = models.CharField(max_length=100, verbose_name="股票名称", help_text="股票名称")
-    latest_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='最新价格',
-                                       help_text='最新价格')
-    limit_up_order_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True,
-                                                verbose_name='涨停封单金额', help_text='涨停封单金额')
-    cap = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='自由流通市值',
-                              help_text='自由流通市值')
-    limit_up_reason = models.CharField(max_length=255, null=True, blank=True, verbose_name="涨停原因",
-                                       help_text="涨停原因")
+    latest_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='最新价格', help_text='最新价格')
+    limit_up_order_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='涨停封单金额', help_text='涨停封单金额')
+    cap = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='自由流通市值', help_text='自由流通市值')
+    limit_up_reason = models.CharField(max_length=255, null=True, blank=True, verbose_name="涨停原因", help_text="涨停原因")
 
     class Meta:
         db_table = table_prefix + "auction_limit_up"
@@ -69,7 +65,7 @@ class StockLimitUpAuction(BaseStockModel):
     cb = models.CharField(max_length=50, null=True, blank=True, verbose_name="可转债", help_text="可转债")
 
     class Meta:
-        db_table = 'stock_limit_up_auction'
+        db_table = 'stock_limit_up_series'
         verbose_name = "集合竞价选股(连板)"
         verbose_name_plural = verbose_name
         constraints = [

@@ -16,6 +16,7 @@ class TradingVolume(BaseModel):
         db_table = table_prefix + "trading_volume"
         verbose_name = "成交额"
         verbose_name_plural = verbose_name
+        unique_together = ('trade_date',)
 
     def __str__(self):
         return f"{self.trade_date} - 沪市:{self.sh_market}, 深市:{self.sz_market}, 两市总额:{self.total_market}"
@@ -54,6 +55,8 @@ class StockLimitUpDetail(BaseModel):
         db_table = table_prefix + "limit_up_detail"
         verbose_name = "涨停"
         verbose_name_plural = verbose_name
+        # (`trade_date`,`stock_code`)
+        unique_together = ('trade_date', 'stock_code')
 
     def __str__(self):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
@@ -83,6 +86,7 @@ class StockLimitDownDetail(BaseModel):
         db_table = table_prefix + "limit_down_detail"
         verbose_name = "跌停"
         verbose_name_plural = verbose_name
+        unique_together = ('trade_date', 'stock_code')
 
     def __str__(self):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
@@ -107,6 +111,7 @@ class StockLimitBlast(BaseModel):
         db_table = table_prefix + "limit_blast"
         verbose_name = "炸板"
         verbose_name_plural = verbose_name
+        unique_together = ('trade_date', 'stock_code')
 
     def __str__(self):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
@@ -130,6 +135,7 @@ class StockDailyData(BaseModel):
         db_table = table_prefix + "daily_data"
         verbose_name = "日线"
         verbose_name_plural = verbose_name
+        unique_together = ('trade_date', 'ts_code')
 
     def __str__(self):
         return f"{self.trade_date} - 股票名称:{self.ts_code}"
@@ -146,6 +152,8 @@ class StockTickTimeDataDays(BaseModel):
         db_table = table_prefix + "tick_time_data_days"
         verbose_name = "分时"
         verbose_name_plural = verbose_name
+        # 设置联合唯一索引 (`trade_date`,`tick_time`,`stock_code`)
+        unique_together = (('trade_date', 'stock_code', 'tick_time'),)
 
     def __str__(self):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
@@ -160,6 +168,8 @@ class StockTradeCalendar(BaseModel):
         db_table = table_prefix + "trade_calendar"
         verbose_name = "交易日历"
         verbose_name_plural = verbose_name
+        # 设置联合唯一索引
+        unique_together = (('trade_date',),)
 
     def __str__(self):
         return f"{self.trade_date} - 是否开市:{self.market_open}"
