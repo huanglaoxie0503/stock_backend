@@ -3,10 +3,12 @@
 # @Date  : 2024-07-12
 # @Desc :
 import uuid
+from datetime import datetime
 
 from django.db import models
 
 from stock_backend import settings
+from utils.common import format_color
 
 table_prefix = 'stock_'
 
@@ -37,8 +39,10 @@ class CoreModel(models.Model):
         db_constraint=False  # 禁用数据库级的外键约束
     )
     modifier = models.CharField(max_length=100, null=True, blank=True, verbose_name="修改人", help_text="修改人")
-    create_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="创建时间", help_text="创建时间")
-    update_datetime = models.DateTimeField(auto_now=True, null=True, blank=True, verbose_name="修改时间", help_text="修改时间")
+    create_datetime = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="创建时间",
+                                           help_text="创建时间")
+    update_datetime = models.DateTimeField(auto_now=True, null=True, blank=True, verbose_name="修改时间",
+                                           help_text="修改时间")
 
     class Meta:
         abstract = True
@@ -59,6 +63,28 @@ class BaseModel(models.Model):
         abstract = True  # 表示该类是一个抽象类，只用来继承，不参与迁移操作
         verbose_name = '基本模型'
         verbose_name_plural = verbose_name
+
+
+class BaseColorAdmin(object):
+    def trade_date_color(self, obj):
+        current_date = datetime.now().date()
+        thresholds = [
+            lambda x: x == current_date
+        ]
+        colors = ['red']
+        return format_color(obj.trade_date, thresholds, colors)
+
+    trade_date_color.short_description = '交易日'
+
+
+class BaseQueryAdmin(object):
+    list_per_page = 15
+
+    def queryset(self):
+        qs = super().queryset()
+        # 根据日期字段进行排序，并只取最新日期的数据
+        latest_date = qs.latest('trade_date').trade_date
+        return qs.filter(trade_date=latest_date)
 
 
 if __name__ == '__main__':

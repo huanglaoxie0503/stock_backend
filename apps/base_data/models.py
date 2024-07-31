@@ -183,8 +183,8 @@ class StockConditionalPicker(BaseModel):
     pre_close = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='收盘价', help_text='收盘价')
     high_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='最高价', help_text='最高价')
     chg = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='涨跌幅', help_text='涨跌幅')
-    cap = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='自由流通市值', help_text='自由流通市值')
-    volume = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='成交量', help_text='成交量')
+    cap = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='市值(亿)', help_text='自由流通市值')
+    volume = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='成交量(手)', help_text='成交量')
     concept = models.TextField(null=True, blank=True, verbose_name="所属概念", help_text="所属概念")
 
     class Meta:
