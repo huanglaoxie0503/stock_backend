@@ -56,7 +56,7 @@ class StockLimitUpAuction(BaseStockModel):
 
     class Meta:
         db_table = 'stock_limit_up_series'
-        verbose_name = "集合竞价选股(连板)"
+        verbose_name = "雏龙选股"
         verbose_name_plural = verbose_name
         constraints = [
             models.UniqueConstraint(fields=['trade_date', 'stock_code'], name='unique_trade_date_stock_code_limit_up_auction')]
@@ -73,7 +73,7 @@ class StockAuctionConditions(BaseStockModel):
 
     class Meta:
         db_table = 'stock_auction_conditions'
-        verbose_name = "集合竞价选股(条件)"
+        verbose_name = "条件选股"
         verbose_name_plural = verbose_name
         constraints = [
             models.UniqueConstraint(fields=['trade_date', 'stock_code', 'cond_name'],

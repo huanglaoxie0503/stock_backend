@@ -3,8 +3,22 @@
 # @Date  : 2024-07-16
 # @Desc :
 import os
+import platform
+import subprocess
+
 
 # ===============MySQL 数据库 配置=============== #
+def load_env_from_bash_profile():
+    command = 'source ~/.bash_profile && env'
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
+    for line in proc.stdout:
+        (key, _, value) = line.decode('utf-8').partition('=')
+        os.environ[key.strip()] = value.strip()
+
+
+if platform.system() == 'Darwin':
+    load_env_from_bash_profile()
+
 # 数据库地址
 DATABASE_ENGINE = "django.db.backends.mysql"
 # 数据库地址
@@ -21,7 +35,6 @@ DATABASE_NAME = os.getenv('MYSQL_DB', 'stock_data')
 DATABASE_CHARSET = os.getenv('MYSQL_CHARSET', 'utf8mb4')
 # 数据库长连接时间（默认为0，单位秒）即每次请求都重新连接,debug模式下该值应该写为0 ，mysql默认长连接超时时间为8小时
 DATABASE_CONN_MAX_AGE = 120  # 推荐120（2分钟），使用 None 则是无限的持久连接（不推荐）。
-
 
 # ======================Redis 配置=========================== #
 REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
@@ -43,4 +56,3 @@ IS_SINGLE_TOKEN = False  # 是否只允许单用户单一地点登录(只有一�
 TABLE_PREFIX = "stock_"
 # 手机号码正则表达式
 REGEX_MOBILE = r"^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$"
-
