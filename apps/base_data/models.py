@@ -47,9 +47,8 @@ class StockLimitUpDetail(BaseModel):
                               help_text='自由流通市值')
     volume = models.BigIntegerField(null=True, blank=True, verbose_name='成交量', help_text='成交量')
     cb = models.CharField(max_length=100, null=True, blank=True, verbose_name='可转债', help_text='可转债')
-    limit_up_reasons_hot = models.CharField(max_length=100, verbose_name='热门涨停归因', help_text='热门涨停归因')
-    limit_up_reasons = models.CharField(max_length=255, null=True, blank=True, verbose_name="涨停原因",
-                                        help_text="涨停原因")
+    limit_up_reasons_hot = models.CharField(max_length=100, null=True, blank=True, verbose_name='涨停归因', help_text='热门涨停归因')
+    limit_up_reasons = models.CharField(max_length=255, null=True, blank=True, verbose_name="题材", help_text="涨停原因")
 
     class Meta:
         db_table = table_prefix + "limit_up_detail"
