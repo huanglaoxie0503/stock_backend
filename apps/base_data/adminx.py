@@ -23,7 +23,7 @@ class StockLimitUpDetailAdmin(BaseQueryAdmin):
                     'first_limit_up_time', 'last_limit_up_time', 'latest_price', 'latest_chg']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
-    ordering = ['-trade_date']
+    ordering = ['-limit_up_days']
     model_icon = 'fa fa-database'
     # list_per_page = 15
     list_display_links = ['trade_date']
