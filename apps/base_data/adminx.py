@@ -101,7 +101,7 @@ class StockTradeCalendarAdmin(BaseColorAdmin):
 
 class StockConditionalPickerAdmin(BaseQueryAdmin):
     list_display = ['trade_date', 'stock_code', 'stock_name', 'cond_name', 'pre_close', 'high_price', 'chg', 'cap',
-                    'volume', 'concept']
+                    'volume', 'concept', 'update_datetime']
     list_filter = ['trade_date']
     search_fields = ['trade_date']
     ordering = ['-trade_date']
