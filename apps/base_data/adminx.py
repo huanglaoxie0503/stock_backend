@@ -18,9 +18,8 @@ from apps.base_data.models import (
 
 
 class StockLimitUpDetailAdmin(BaseQueryAdmin):
-    list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_type', 'limit_up_amount', 'limit_up_volume',
-                    'limit_up_days', 'limit_up_opening_nums', 'limit_up_reasons_hot', 'limit_up_reasons',
-                    'first_limit_up_time', 'last_limit_up_time', 'latest_price', 'latest_chg']
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_days_color', 'limit_up_amount', 'limit_up_volume',
+                    'latest_price', 'latest_chg', 'limit_up_reasons_hot', 'limit_up_reasons', 'limit_up_type', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
     ordering = ['-limit_up_days']
@@ -34,6 +33,14 @@ class StockLimitUpDetailAdmin(BaseQueryAdmin):
         # 根据日期字段进行排序，并只取最新日期的数据
         latest_date = qs.latest('trade_date').trade_date
         return qs.filter(trade_date=latest_date)
+
+    def limit_up_days_color(self, obj):
+        thresholds = [
+            lambda x: x >= 2
+        ]
+        colors = ['red']
+        return format_color(obj.limit_up_days, thresholds, colors)
+    limit_up_days_color.short_description = '市值(亿)'
 
 
 class StockLimitDownDetailAdmin(BaseQueryAdmin):

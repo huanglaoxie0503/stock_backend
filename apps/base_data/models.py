@@ -26,9 +26,9 @@ class StockLimitUpDetail(BaseModel):
     trade_date = models.DateField(verbose_name="交易日期", help_text="交易日期")
     stock_code = models.CharField(max_length=20, verbose_name="股票代码", help_text="股票代码")
     stock_name = models.CharField(max_length=100, verbose_name="股票名称", help_text="股票名称")
-    latest_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="最新价格",
+    latest_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="价格",
                                        help_text="最新价格")
-    latest_chg = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="最新涨跌幅",
+    latest_chg = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="涨跌幅",
                                      help_text="最新涨跌幅")
     limit_up_type = models.CharField(max_length=50, null=True, blank=True, verbose_name="涨停类型",
                                      help_text="涨停类型")
@@ -37,10 +37,10 @@ class StockLimitUpDetail(BaseModel):
     first_limit_up_time = models.TimeField(null=True, blank=True, verbose_name="首次涨停时间", help_text="首次涨停时间")
     last_limit_up_time = models.TimeField(null=True, blank=True, verbose_name="最后一次涨停时间",
                                           help_text="最后一次涨停时间")
-    limit_up_opening_nums = models.IntegerField(default=0, verbose_name='涨停开板次数', help_text='涨停开板次数')
-    limit_up_volume = models.BigIntegerField(null=True, blank=True, verbose_name='涨停封单量', help_text='涨停封单量')
+    limit_up_opening_nums = models.IntegerField(default=0, verbose_name='开板次数', help_text='涨停开板次数')
+    limit_up_volume = models.BigIntegerField(null=True, blank=True, verbose_name='封单量', help_text='涨停封单量')
     limit_up_amount = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True,
-                                          verbose_name='涨停封单金额', help_text='涨停封单金额')
+                                          verbose_name='封单金额(亿)', help_text='涨停封单金额')
     volume_rate = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True,
                                       verbose_name='涨停封单量占成交量比', help_text='涨停封单量占成交量比')
     cap = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True, verbose_name='自由流通市值',
