@@ -43,7 +43,7 @@ class StockLimitUpDetail(BaseModel):
                                           verbose_name='封单金额(亿)', help_text='涨停封单金额')
     volume_rate = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True,
                                       verbose_name='涨停封单量占成交量比', help_text='涨停封单量占成交量比')
-    cap = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True, verbose_name='自由流通市值',
+    cap = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True, verbose_name='市值(亿)',
                               help_text='自由流通市值')
     volume = models.BigIntegerField(null=True, blank=True, verbose_name='成交量', help_text='成交量')
     cb = models.CharField(max_length=100, null=True, blank=True, verbose_name='可转债', help_text='可转债')

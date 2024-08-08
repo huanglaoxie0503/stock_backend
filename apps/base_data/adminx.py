@@ -18,8 +18,7 @@ from apps.base_data.models import (
 
 
 class StockLimitUpDetailAdmin(BaseQueryAdmin):
-    list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_days_color', 'limit_up_amount', 'limit_up_volume',
-                    'latest_price', 'latest_chg', 'limit_up_reasons_hot', 'limit_up_reasons', 'limit_up_type', 'update_datetime']
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_days_color', 'cap', 'limit_up_reasons_hot', 'limit_up_reasons', 'limit_up_type', 'cb', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
     ordering = ['-limit_up_days']
@@ -40,7 +39,7 @@ class StockLimitUpDetailAdmin(BaseQueryAdmin):
         ]
         colors = ['red']
         return format_color(obj.limit_up_days, thresholds, colors)
-    limit_up_days_color.short_description = '市值(亿)'
+    limit_up_days_color.short_description = '连板数'
 
 
 class StockLimitDownDetailAdmin(BaseQueryAdmin):
