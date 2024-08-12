@@ -2,10 +2,6 @@
 # -*- coding: UTF-8 -*-
 # @Date  : 2024-07-27
 # @Desc :
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-# @Date  : 2024-07-27
-# @Desc :
 from django.core.management.base import BaseCommand
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.apps import apps

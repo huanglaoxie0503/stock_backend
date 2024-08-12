@@ -44,7 +44,7 @@ class StockLimitUpDetailAdmin(BaseQueryAdmin):
 
 class StockLimitDownDetailAdmin(BaseQueryAdmin):
     list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_down_type', 'limit_down_amount',
-                    'limit_down_volume', 'limit_down_days', 'limit_down_reason', 'limit_down_time', 'latest_chg']
+                    'limit_down_volume', 'limit_down_days', 'limit_down_time', 'latest_chg', 'limit_down_reason']
     list_filter = ['trade_date']
     search_fields = ['trade_date']
     ordering = ['-trade_date']

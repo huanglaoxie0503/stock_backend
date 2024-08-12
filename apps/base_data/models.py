@@ -65,12 +65,12 @@ class StockLimitDownDetail(BaseModel):
     trade_date = models.DateField(verbose_name="交易日期", help_text="交易日期")
     stock_code = models.CharField(max_length=20, verbose_name="股票代码", help_text="股票代码")
     stock_name = models.CharField(max_length=100, verbose_name="股票名称", help_text="股票名称")
-    latest_chg = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="最新涨跌幅",
-                                     help_text="最新涨跌幅")
+    latest_chg = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="涨跌幅(%)",
+                                     help_text="最新涨跌幅(%)")
     limit_down_days = models.IntegerField(default=1, verbose_name="跌停天数", help_text="跌停天数")
     limit_down_amount = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True,
-                                            verbose_name='跌停封单金额', help_text='跌停封单金额')
-    limit_down_volume = models.BigIntegerField(null=True, blank=True, verbose_name='跌停封单量', help_text='跌停封单量')
+                                            verbose_name='跌停封单额(亿)', help_text='跌停封单金额(亿)')
+    limit_down_volume = models.BigIntegerField(null=True, blank=True, verbose_name='跌停封单量(手)', help_text='跌停封单量(手)')
     volume = models.BigIntegerField(null=True, blank=True, verbose_name='成交量', help_text='成交量')
     cap = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True, verbose_name='自由流通市值',
                               help_text='自由流通市值')
