@@ -55,12 +55,12 @@ class StockLimitDownDetailAdmin(BaseQueryAdmin):
 
 
 class StockLimitBlastAdmin(BaseQueryAdmin):
-    list_display = ['trade_date', 'stock_code', 'stock_name', 'has_limit_up', 'limit_up_duration', 'limit_up_price',
-                    'pre_close', 'latest_chg', 'volume', 'limit_up_opened_cnt']
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_price','pre_close', 'latest_chg', 'volume', 'limit_up_opened_cnt', 'concept']
     list_filter = ['trade_date']
     search_fields = ['trade_date']
     ordering = ['-trade_date']
     model_icon = 'fa fa-cube'
+    list_editable = ['concept']
     list_per_page = 15
 
 
