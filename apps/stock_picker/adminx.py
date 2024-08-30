@@ -18,7 +18,7 @@ from utils.models import BaseColorAdmin
 
 
 class StockAuctionAdmin(object):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'latest_price', 'limit_up_order_amount', 'cap', 'limit_up_reason', 'update_datetime']
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_order_amount', 'cap', 'latest_price', 'limit_up_reason', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
     ordering = ['-trade_date']
@@ -27,6 +27,13 @@ class StockAuctionAdmin(object):
     list_editable = []
     app_icon = 'fa fa-anchor'
     model_icon = 'fa fa-hand-o-up'
+
+    def queryset(self):
+        qs = super().queryset()
+        # 根据日期字段进行排序，并只取最新日期的数据
+        latest_date = qs.latest('trade_date').trade_date
+        # 按最新日期筛选数据，并按 limit_up_order_amount 字段倒序排序
+        return qs.filter(trade_date=latest_date).order_by('-limit_up_order_amount')
 
     def trade_date_color(self, obj):
         current_date = datetime.now().date()
