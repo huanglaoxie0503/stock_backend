@@ -49,8 +49,8 @@ class StockAuctionAdmin(object):
 
 class StockLimitUpAuctionAdmin(object):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_days', 'vol_ratio_color', 'vol_ratio_oa_color', 'cap_color', 'open_price', 'pre_close', 'model_name', 'last_limit_up_time', 'limit_up_reasons', 'is_ops', 'profit_chg', 'profit_chg_close', 'cb', 'update_datetime']
-    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days']
-    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     # 排序字段
     ordering = ['-trade_date', '-limit_up_days', '-pre_open_vol_ratio']
     list_per_page = 15
@@ -110,8 +110,8 @@ class StockLimitUpAuctionRealAdmin(object):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_days', 'vol_ratio_color',
                     'vol_ratio_oa_color', 'cap_color', 'open_price', 'pre_close', 'model_name', 'last_limit_up_time',
                     'limit_up_reasons', 'is_ops', 'profit_chg', 'profit_chg_close', 'cb', 'update_datetime']
-    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days']
-    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     # 排序字段
     # ordering = ['-trade_date', '-limit_up_days', '-pre_open_vol_ratio']
     list_per_page = 15
@@ -184,13 +184,20 @@ class StockLimitUpAuctionRealAdmin(object):
 
 class StockAuctionConditionsAdmin(BaseColorAdmin):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color', 'vol_ratio_oa_color', 'open_price', 'profit_chg_color', 'cap', 'gap_type_color', 'cond_name', 'concept', 'is_ops', 'profit_chg_close', 'update_datetime']
-    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops']
-    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops', 'concept']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops', 'concept']
     ordering = ['-trade_date',  '-profit_chg']
     model_icon = 'fa fa-legal'
     list_per_page = 15
     list_display_links = ['trade_date']
     list_editable = []
+
+    def queryset(self):
+        qs = super().queryset()
+        # 根据日期字段进行排序，并只取最新日期的数据
+        latest_date = qs.latest('trade_date').trade_date
+        # 按最新日期筛选数据，并按 limit_up_order_amount 字段倒序排序
+        return qs.filter(trade_date=latest_date)
 
     def vol_ratio_color(self, obj):
         thresholds = [

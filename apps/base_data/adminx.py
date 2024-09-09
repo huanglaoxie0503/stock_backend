@@ -19,8 +19,8 @@ from apps.base_data.models import (
 
 class StockLimitUpDetailAdmin(BaseQueryAdmin):
     list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_days_color', 'cap', 'limit_up_reasons_hot', 'limit_up_reasons', 'limit_up_type', 'cb', 'update_datetime']
-    list_filter = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
-    search_fields = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot', 'limit_up_reasons']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot', 'limit_up_reasons']
     ordering = ['-limit_up_days']
     model_icon = 'fa fa-database'
     # list_per_page = 15
@@ -108,8 +108,8 @@ class StockTradeCalendarAdmin(BaseColorAdmin):
 class StockConditionalPickerAdmin(BaseQueryAdmin):
     list_display = ['trade_date', 'stock_code', 'stock_name', 'cond_name', 'pre_close', 'high_price', 'chg', 'cap',
                     'volume', 'concept', 'update_datetime']
-    list_filter = ['trade_date']
-    search_fields = ['trade_date']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'cond_name', 'concept']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'cond_name', 'concept']
     ordering = ['-trade_date']
     list_per_page = 15
     list_display_links = ['trade_date']
