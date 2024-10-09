@@ -62,7 +62,8 @@ class StockLimitUpAuctionAdmin(object):
         qs = super().queryset()
         # 根据日期字段进行排序，并只取最新日期的数据
         latest_date = qs.latest('trade_date').trade_date
-        return qs.filter(trade_date=latest_date, limit_up_days__in=[1, 2])
+        # return qs.filter(trade_date=latest_date, limit_up_days__in=[1, 2])
+        return qs.filter(trade_date=latest_date)
 
     # 天量比
     def vol_ratio_color(self, obj):
