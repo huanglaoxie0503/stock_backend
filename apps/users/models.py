@@ -28,7 +28,7 @@ class UserProfile(AbstractUser, CoreModel):
     gender = models.SmallIntegerField(choices=GENDER_CHOICES, null=True, blank=True, verbose_name="性别",help_text="性别")
     # 自定义
     identity = models.SmallIntegerField(choices=IDENTITY_CHOICES, verbose_name="身份标识", null=True, blank=True, default=2, help_text="身份标识")
-    permissions = models.JSONField(default=list, verbose_name="权限列表", help_text="权限列表")
+    # permissions = models.JSONField(default=list, verbose_name="权限列表", help_text="权限列表")
     is_delete = models.BooleanField(default=False, verbose_name="是否逻辑删除", help_text="是否逻辑删除")
 
     class Meta:
