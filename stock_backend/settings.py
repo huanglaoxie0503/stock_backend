@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'xadmin',
     'apps.users',
     "apps.base_data",
-    "apps.stock_picker"
+    "apps.stock_picker",
+    "apps.news"
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
