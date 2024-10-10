@@ -19,7 +19,8 @@ class BaseSetting(object):
 
 class GlobalSettings(object):
     # 设置站点标题
-    site_title = "涨停宝后台"
+    # site_title = "涨停宝后台"
+    site_title = "集合竞价后台"
     # 设置站点的页脚
     site_footer = "stock"
     # 设置菜单折叠
