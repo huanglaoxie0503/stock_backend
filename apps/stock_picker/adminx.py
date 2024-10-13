@@ -256,7 +256,7 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
     list_filter = ['trade_date', 'stock_code', 'stock_name']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
     ordering = ['-vol_diff_20_25']
-    model_icon = 'fa-envelope-open'
+    model_icon = 'fa fa-heart'
     list_per_page = 20
     list_display_links = ['trade_date']
     list_editable = []
