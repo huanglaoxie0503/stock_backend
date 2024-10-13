@@ -23,7 +23,7 @@ class StockAuctionAdmin(object):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_order_amount', 'vol_diff_20_25', 'vol_diff_24_25', 'cap', 'latest_price', 'limit_up_reason', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
-    ordering = ['-trade_date']
+    ordering = ['-limit_up_order_amount']
     list_per_page = 10
     list_display_links = ['trade_date']
     list_editable = []
@@ -53,7 +53,7 @@ class StockLimitUpAuctionAdmin(object):
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     # 排序字段
-    ordering = ['-trade_date', '-limit_up_days', '-pre_open_vol_ratio']
+    ordering = ['-trade_date', '-limit_up_days', '-vol_diff_20_25']
     list_per_page = 15
     list_display_links = ['trade_date']
     list_editable = []
@@ -188,7 +188,7 @@ class StockAuctionConditionsAdmin(BaseColorAdmin):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color', 'vol_ratio_oa_color', 'vol_diff_20_25', 'vol_diff_24_25', 'profit_chg_color', 'cap', 'gap_type_color', 'cond_name', 'concept', 'is_ops', 'profit_chg_close', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops', 'concept']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops', 'concept']
-    ordering = ['-trade_date',  '-profit_chg']
+    ordering = ['-vol_diff_20_25',  '-profit_chg']
     model_icon = 'fa fa-legal'
     list_per_page = 15
     list_display_links = ['trade_date']
