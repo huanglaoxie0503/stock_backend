@@ -20,6 +20,8 @@ class BaseStockModel(BaseModel):
     is_ops = models.BooleanField(default=False, verbose_name="是否操作", help_text="是否操作")
     profit_chg = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, verbose_name='竞价涨幅', help_text='竞价盈亏')
     profit_chg_close = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, verbose_name='收盘盈亏', help_text='收盘时的盈亏')
+    vol_diff_20_25 = models.IntegerField(default=0, verbose_name='T_20(万手)', help_text='20-25量差(万手)')
+    vol_diff_24_25 = models.IntegerField(default=0, verbose_name='T_24(手)', help_text='24-25量差(手)')
 
     class Meta:
         abstract = True
@@ -33,6 +35,8 @@ class StockAuction(BaseModel):
     limit_up_order_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='竞价封单(亿)', help_text='涨停封单金额')
     cap = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='市值(亿)', help_text='自由流通市值')
     limit_up_reason = models.CharField(max_length=255, null=True, blank=True, verbose_name="涨停归因", help_text="涨停原因")
+    vol_diff_20_25 = models.IntegerField(default=0, verbose_name='T_20(万手)', help_text='20-25量差(万手)')
+    vol_diff_24_25 = models.IntegerField(default=0, verbose_name='T_24(手)', help_text='24-25量差(手)')
 
     class Meta:
         db_table = table_prefix + "auction_limit_up"
@@ -56,7 +60,7 @@ class StockLimitUpAuction(BaseStockModel):
 
     class Meta:
         db_table = 'stock_limit_up_series'
-        verbose_name = "雏龙选股(全)"
+        verbose_name = "雏龙选股"
         verbose_name_plural = verbose_name
         constraints = [
             models.UniqueConstraint(fields=['trade_date', 'stock_code'], name='unique_trade_date_stock_code_limit_up_auction')]
@@ -100,3 +104,47 @@ class StockAuctionConditions(BaseStockModel):
 
     def __str__(self):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
+
+
+class AuctionAggressiveBuyingDetail(BaseModel):
+    trade_date = models.DateField(verbose_name="交易日期", help_text="交易日期")
+    stock_code = models.CharField(max_length=20, verbose_name="股票代码", help_text="股票代码")
+    stock_name = models.CharField(max_length=100, verbose_name="股票名称", help_text="股票名称")
+    vol_20 = models.IntegerField(default=0, verbose_name='20分量(手)', help_text='20分成交量(手)')
+    vol_24 = models.IntegerField(default=0, verbose_name='24分量(手)', help_text='24分成交量(手)')
+    vol_25 = models.IntegerField(default=0, verbose_name='25分量(手)', help_text='25分成交量(手)')
+    vol_diff_20_25 = models.IntegerField(default=0, verbose_name='T_20(万手)', help_text='20-25量差(万手)')
+    vol_diff_24_25 = models.IntegerField(default=0, verbose_name='T_24(手)', help_text='24-25量差(手)')
+    buy_1_vol = models.IntegerField(default=0, verbose_name='买一(手)', help_text='买一量(手)')
+    price_20 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name='20分价', help_text='20分价格')
+    price_24 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name='24分价', help_text='24分价格')
+    price_25 = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name='25分价', help_text='25分价格')
+    tk_20 = models.TimeField(
+        null=True,  # 数据库允许存储空值
+        blank=True,  # 表单验证时允许该字段为空
+        default=None,  # 默认值，可以设置为 None 或其他具体时间
+        help_text="集合竞价分时9点20分",  # 提供给 Django Admin 或表单的帮助文本
+        verbose_name="09:20"  # Django Admin 中显示的更友好的字段名
+    )
+    tk_24 = models.TimeField(
+        null=True,  # 数据库允许存储空值
+        blank=True,  # 表单验证时允许该字段为空
+        default=None,  # 默认值，可以设置为 None 或其他具体时间
+        help_text="集合竞价分时9点24分",  # 提供给 Django Admin 或表单的帮助文本
+        verbose_name="09:24"  # Django Admin 中显示的更友好的字段名
+    )
+    tk_25 = models.TimeField(
+        null=True,  # 数据库允许存储空值
+        blank=True,  # 表单验证时允许该字段为空
+        default=None,  # 默认值，可以设置为 None 或其他具体时间
+        help_text="集合竞价分时9点25分",  # 提供给 Django Admin 或表单的帮助文本
+        verbose_name="09:25"  # Django Admin 中显示的更友好的字段名
+    )
+
+    class Meta:
+        db_table = table_prefix + 'auction_aggressive_buying_detail'
+        verbose_name = "竞价抢筹"
+        verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(fields=['trade_date', 'stock_code'], name='unique_auction_aggressive_buying_detail')
+        ]
