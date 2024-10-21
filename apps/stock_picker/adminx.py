@@ -4,6 +4,8 @@
 # @Desc :
 import xadmin
 from datetime import datetime
+
+from django.utils.html import format_html
 from loguru import logger
 from django.core.cache import cache
 
@@ -251,7 +253,7 @@ class StockAuctionConditionsAdmin(BaseColorAdmin):
 
 
 class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_diff_20_25', 'vol_diff_24_25',
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'chg_color', 'vol_diff_20_25', 'vol_diff_24_25',
                     'buy_1_vol', 'vol_20', 'vol_24', 'vol_25', 'price_20', 'price_24', 'price_25']
     list_filter = ['trade_date', 'stock_code', 'stock_name']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
@@ -277,6 +279,27 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
         return format_color(obj.trade_date, thresholds, colors)
 
     trade_date_color.short_description = '交易日'
+
+    def chg_color(self, obj):
+        open_chg = obj.open_chg if obj.open_chg is not None else 0.00
+
+        # 确保 open_chg 是浮点数
+        try:
+            open_chg = float(open_chg)
+        except ValueError:
+            open_chg = 0.00
+
+        if open_chg > 5:
+            color = 'red'
+        elif 0 < open_chg <= 5:
+            color = 'purple'
+        else:
+            color = 'green'
+
+        formatted_chg = f"{open_chg:.2f}%" if open_chg != 0.00 else "0.00%"
+        return format_html('<span style="color: {};">{}</span>', color, formatted_chg)
+
+    chg_color.short_description = '涨幅'
 
 
 xadmin.site.register(StockAuction, StockAuctionAdmin)

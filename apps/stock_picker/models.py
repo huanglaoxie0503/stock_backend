@@ -140,6 +140,7 @@ class AuctionAggressiveBuyingDetail(BaseModel):
         help_text="集合竞价分时9点25分",  # 提供给 Django Admin 或表单的帮助文本
         verbose_name="09:25"  # Django Admin 中显示的更友好的字段名
     )
+    open_chg = models.CharField(max_length=50, null=True, blank=True, verbose_name="涨跌幅", help_text="开盘涨跌幅")
 
     class Meta:
         db_table = table_prefix + 'auction_aggressive_buying_detail'
