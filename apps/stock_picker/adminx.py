@@ -254,7 +254,7 @@ class StockAuctionConditionsAdmin(BaseColorAdmin):
 
 class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'chg_color', 'vol_diff_20_25', 'vol_diff_24_25',
-                    'buy_1_vol', 'vol_20', 'vol_24', 'vol_25', 'price_20', 'price_24', 'price_25', 'is_limit_up_color']
+                    'buy_1_vol', 'vol_20', 'vol_24', 'vol_25', 'is_limit_up_color']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_limit_up']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
     ordering = ['-vol_diff_20_25']
