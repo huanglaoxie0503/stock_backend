@@ -254,8 +254,8 @@ class StockAuctionConditionsAdmin(BaseColorAdmin):
 
 class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'chg_color', 'vol_diff_20_25', 'vol_diff_24_25',
-                    'buy_1_vol', 'vol_20', 'vol_24', 'vol_25', 'price_20', 'price_24', 'price_25']
-    list_filter = ['trade_date', 'stock_code', 'stock_name']
+                    'buy_1_vol', 'vol_20', 'vol_24', 'vol_25', 'price_20', 'price_24', 'price_25', 'is_limit_up_color']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_limit_up']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
     ordering = ['-vol_diff_20_25']
     model_icon = 'fa fa-heart'
@@ -305,6 +305,24 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
         return format_html('<span style="color: {};">{}</span>', color, formatted_chg)
 
     chg_color.short_description = '涨幅'
+
+    def is_limit_up_color(self, obj):
+        # 获取 is_limit_up 属性的值
+        is_limit_up = getattr(obj, 'is_limit_up', None)
+
+        # 根据 is_limit_up 的值设置颜色和显示的文字
+        if is_limit_up == '涨停':
+            color = 'red'
+            formatted_text = "涨停"
+        else:
+            color = 'gray'
+            formatted_text = "N/A"  # 或者你可以选择其他默认显示的文字
+
+        return format_html('<span style="color: {};">{}</span>', color, formatted_text)
+
+    # 设置短描述
+    is_limit_up_color.short_description = '涨停状态'
+
 
 
 xadmin.site.register(StockAuction, StockAuctionAdmin)

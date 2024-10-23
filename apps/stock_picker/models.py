@@ -141,6 +141,7 @@ class AuctionAggressiveBuyingDetail(BaseModel):
         verbose_name="09:25"  # Django Admin 中显示的更友好的字段名
     )
     open_chg = models.CharField(max_length=50, null=True, blank=True, verbose_name="涨跌幅", help_text="开盘涨跌幅")
+    is_limit_up = models.CharField(default='N/A', max_length=20, null=True, blank=True, verbose_name='涨停', help_text='涨停')
 
     class Meta:
         db_table = table_prefix + 'auction_aggressive_buying_detail'
