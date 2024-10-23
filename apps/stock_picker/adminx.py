@@ -281,22 +281,27 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
     trade_date_color.short_description = '交易日'
 
     def chg_color(self, obj):
-        open_chg = obj.open_chg if obj.open_chg is not None else 0.00
+        open_chg = obj.open_chg if obj.open_chg is not None else None
 
         # 确保 open_chg 是浮点数
         try:
-            open_chg = float(open_chg)
+            open_chg = float(open_chg) if open_chg is not None else None
         except ValueError:
-            open_chg = 0.00
+            open_chg = None
 
-        if open_chg > 5:
+        if open_chg == 0.00:
+            color = 'gray'
+            formatted_chg = "N/A"  # 显示为 N/A 或其他提示文字
+        elif open_chg > 5:
             color = 'red'
+            formatted_chg = f"{open_chg:.2f}%"
         elif 0 < open_chg <= 5:
             color = 'purple'
+            formatted_chg = f"{open_chg:.2f}%"
         else:
             color = 'green'
+            formatted_chg = f"{open_chg:.2f}%"
 
-        formatted_chg = f"{open_chg:.2f}%" if open_chg != 0.00 else "0.00%"
         return format_html('<span style="color: {};">{}</span>', color, formatted_chg)
 
     chg_color.short_description = '涨幅'
