@@ -142,6 +142,7 @@ class AuctionAggressiveBuyingDetail(BaseModel):
     )
     open_chg = models.CharField(max_length=50, null=True, blank=True, verbose_name="涨跌幅", help_text="开盘涨跌幅")
     is_limit_up = models.CharField(default='N/A', max_length=20, null=True, blank=True, verbose_name='涨停', help_text='涨停')
+    remark = models.CharField(default='N/A', max_length=50, null=True, blank=True, verbose_name='备注', help_text='备注')
 
     class Meta:
         db_table = table_prefix + 'auction_aggressive_buying_detail'
