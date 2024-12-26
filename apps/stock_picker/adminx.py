@@ -9,7 +9,6 @@ from django.utils.html import format_html
 from loguru import logger
 from django.core.cache import cache
 
-
 from apps.stock_picker.models import (
     StockAuction,
     StockLimitUpAuction,
@@ -22,7 +21,8 @@ from utils.models import BaseColorAdmin
 
 
 class StockAuctionAdmin(object):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_order_amount', 'vol_diff_20_25', 'vol_diff_24_25', 'cap', 'latest_price', 'limit_up_reason', 'update_datetime']
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_order_amount', 'vol_diff_20_25',
+                    'vol_diff_24_25', 'cap', 'latest_price', 'limit_up_reason', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
     ordering = ['-limit_up_order_amount']
@@ -50,8 +50,11 @@ class StockAuctionAdmin(object):
     trade_date_color.short_description = '交易日'
 
 
-class StockLimitUpAuctionAdmin(object):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_days', 'vol_ratio_color', 'vol_ratio_oa_color', 'vol_diff_20_25', 'vol_diff_24_25', 'cap_color', 'open_price', 'pre_close', 'model_name', 'last_limit_up_time', 'limit_up_reasons', 'is_ops', 'profit_chg', 'profit_chg_close', 'cb', 'update_datetime']
+class StockLimitUpAuctionAdminOneToTwo(object):
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_days', 'vol_ratio_color',
+                    'vol_ratio_oa_color', 'vol_diff_20_25', 'vol_diff_24_25', 'cap_color', 'open_price', 'pre_close',
+                    'model_name', 'last_limit_up_time', 'limit_up_reasons', 'is_ops', 'profit_chg', 'profit_chg_close',
+                    'cb', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     # 排序字段
@@ -65,7 +68,7 @@ class StockLimitUpAuctionAdmin(object):
         qs = super().queryset()
         # 根据日期字段进行排序，并只取最新日期的数据
         latest_date = qs.latest('trade_date').trade_date
-        return qs.filter(trade_date=latest_date, limit_up_days__in=[1, 2])
+        return qs.filter(trade_date=latest_date, limit_up_days__in=[1])
         # return qs.filter(trade_date=latest_date)
 
     # 天量比
@@ -97,6 +100,7 @@ class StockLimitUpAuctionAdmin(object):
         ]
         colors = ['red']
         return format_color(obj.cap, thresholds, colors)
+
     cap_color.short_description = '市值(亿)'
 
     def trade_date_color(self, obj):
@@ -110,87 +114,21 @@ class StockLimitUpAuctionAdmin(object):
     trade_date_color.short_description = '交易日'
 
 
-class StockLimitUpAuctionRealAdmin(object):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_days', 'vol_ratio_color',
-                    'vol_ratio_oa_color', 'vol_diff_20_25', 'vol_diff_24_25', 'cap_color', 'open_price', 'pre_close', 'model_name', 'last_limit_up_time',
-                    'limit_up_reasons', 'is_ops', 'profit_chg', 'profit_chg_close', 'cb', 'update_datetime']
-    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
-    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
-    # 排序字段
-    # ordering = ['-trade_date', '-limit_up_days', '-pre_open_vol_ratio']
-    list_per_page = 15
-    list_display_links = ['trade_date']
-    list_editable = []
-    model_icon = 'fa fa-thumbs-o-up'
-
+class StockLimitUpAuctionAdminTwoToThree(StockLimitUpAuctionAdminOneToTwo):
     def queryset(self):
-        from django.db.models import F, Window
-        from django.db.models.functions import RowNumber
         qs = super().queryset()
+        # 根据日期字段进行排序，并只取最新日期的数据
         latest_date = qs.latest('trade_date').trade_date
-
-        # 使用 Window 函数为每个 limit_up_reasons 分组添加 row_number，并按 cap 从小到大排序
-        annotated_qs = qs.filter(
-            trade_date=latest_date
-        ).annotate(
-            row_number=Window(
-                expression=RowNumber(),
-                partition_by=[F('limit_up_reasons')],
-                order_by=F('cap').asc()  # 确保这里是升序排序
-            )
-        )
-
-        # 按 row_number 排序
-        return annotated_qs.order_by('row_number')
-
-    # 天量比
-    def vol_ratio_color(self, obj):
-        thresholds = [
-            lambda x: 0.09 < x <= 0.20,
-            lambda x: x > 0.20
-        ]
-        colors = ['red', 'blue']
-        return format_color(obj.pre_open_vol_ratio, thresholds, colors)
-
-    vol_ratio_color.short_description = '天量比'
-
-    # 分量比
-    def vol_ratio_oa_color(self, obj):
-        thresholds = [
-            lambda x: 0.70 <= x <= 2.0,
-            lambda x: x > 2.0
-        ]
-        colors = ['red', 'blue']
-        return format_color(obj.pre_open_max_vol_ratio, thresholds, colors)
-
-    vol_ratio_oa_color.short_description = '分量比'
-
-    # 市值(亿)
-    def cap_color(self, obj):
-        thresholds = [
-            lambda x: x < 30
-        ]
-        colors = ['red']
-        return format_color(obj.cap, thresholds, colors)
-
-    cap_color.short_description = '市值(亿)'
-
-    def trade_date_color(self, obj):
-        current_date = datetime.now().date()
-        thresholds = [
-            lambda x: x == current_date
-        ]
-        colors = ['red']
-        return format_color(obj.trade_date, thresholds, colors)
-
-    trade_date_color.short_description = '交易日'
+        return qs.filter(trade_date=latest_date, limit_up_days__in=[1])
 
 
 class StockAuctionConditionsAdmin(BaseColorAdmin):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color', 'vol_ratio_oa_color', 'vol_diff_20_25', 'vol_diff_24_25', 'profit_chg_color', 'cap', 'gap_type_color', 'cond_name', 'concept', 'is_ops', 'profit_chg_close', 'update_datetime']
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color', 'vol_ratio_oa_color',
+                    'vol_diff_20_25', 'vol_diff_24_25', 'profit_chg_color', 'cap', 'gap_type_color', 'cond_name',
+                    'concept', 'is_ops', 'profit_chg_close', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops', 'concept']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'gap_type', 'is_ops', 'concept']
-    ordering = ['-vol_diff_20_25',  '-profit_chg']
+    ordering = ['-vol_diff_20_25', '-profit_chg']
     model_icon = 'fa fa-legal'
     list_per_page = 15
     list_display_links = ['trade_date']
@@ -249,11 +187,13 @@ class StockAuctionConditionsAdmin(BaseColorAdmin):
         ]
         colors = ['red']
         return format_color(obj.gap_type, thresholds, colors)
+
     gap_type_color.short_description = '高开类型'
 
 
 class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_diff_20_25', 'vol_diff_24_25', 'chg_color', 'remark', 'vol_25', 'vol_24', 'vol_20', 'buy_1_vol', 'is_limit_up_color']
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_diff_20_25', 'vol_diff_24_25', 'chg_color',
+                    'remark', 'vol_25', 'vol_24', 'vol_20', 'buy_1_vol', 'is_limit_up_color']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_limit_up']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
     ordering = ['-vol_diff_20_25']
@@ -323,11 +263,8 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
     is_limit_up_color.short_description = '涨停状态'
 
 
-
 xadmin.site.register(StockAuction, StockAuctionAdmin)
-xadmin.site.register(StockLimitUpAuction, StockLimitUpAuctionAdmin)
-# xadmin.site.register(StockLimitUpAuctionReal, StockLimitUpAuctionRealAdmin)
+xadmin.site.register(StockLimitUpAuction, StockLimitUpAuctionAdminOneToTwo)
+# xadmin.site.register(StockLimitUpAuctionReal, StockLimitUpAuctionAdminTwoToThree)
 xadmin.site.register(StockAuctionConditions, StockAuctionConditionsAdmin)
 xadmin.site.register(AuctionAggressiveBuyingDetail, AuctionAggressiveBuyingDetailAdmin)
-
-

@@ -79,7 +79,7 @@ class StockLimitUpAuctionReal(BaseStockModel):
 
     class Meta:
         db_table = 'stock_limit_up_series_real'
-        verbose_name = "雏龙选股(real)"
+        verbose_name = "二进三"
         verbose_name_plural = verbose_name
         constraints = [
             models.UniqueConstraint(fields=['trade_date', 'stock_code'], name='unique_trade_date_stock_limit_up_series_real')]
