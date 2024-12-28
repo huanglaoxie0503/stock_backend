@@ -13,7 +13,10 @@ from apps.base_data.models import (
     StockLimitUpDetail,
     StockLimitDownDetail,
     StockLimitBlast,
-    StockTradeCalendar, StockConditionalPicker
+    StockTradeCalendar,
+    StockConditionalPicker,
+    ConceptHistoryMaxLimitUp,
+    DailyConceptLeaders
 )
 
 
@@ -117,9 +120,33 @@ class StockConditionalPickerAdmin(BaseQueryAdmin):
     model_icon = 'fa fa-cube'
 
 
+class ConceptHistoryMaxLimitUpAdmin(object):
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'concept', 'max_limit_up_days', 'create_datetime']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'concept', 'max_limit_up_days']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'concept', 'max_limit_up_days']
+    ordering = ['-trade_date', '-max_limit_up_days']
+    list_per_page = 15
+    list_display_links = ['trade_date']
+    list_editable = ['concept']
+    model_icon = 'fa fa-cube'
+
+
+class DailyConceptLeadersAdmin(object):
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'concept', 'highest_limit_up_days', 'stock_count', 'create_datetime']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'concept', 'highest_limit_up_days', 'stock_count']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'concept', 'highest_limit_up_days', 'stock_count']
+    ordering = ['-trade_date', '-stock_count']
+    list_per_page = 15
+    list_display_links = ['trade_date']
+    list_editable = ['concept']
+    model_icon = 'fa fa-cube'
+
+
 xadmin.site.register(StockLimitUpDetail, StockLimitUpDetailAdmin)
 xadmin.site.register(StockLimitDownDetail, StockLimitDownDetailAdmin)
 xadmin.site.register(StockLimitBlast, StockLimitBlastAdmin)
 xadmin.site.register(StockConditionalPicker, StockConditionalPickerAdmin)
+xadmin.site.register(ConceptHistoryMaxLimitUp, ConceptHistoryMaxLimitUpAdmin)
+xadmin.site.register(DailyConceptLeaders, DailyConceptLeadersAdmin)
 xadmin.site.register(TradingVolume, TradingVolumeAdmin)
 xadmin.site.register(StockTradeCalendar, StockTradeCalendarAdmin)

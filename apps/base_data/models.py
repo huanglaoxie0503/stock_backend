@@ -197,3 +197,36 @@ class StockConditionalPicker(BaseModel):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
 
 
+class ConceptHistoryMaxLimitUp(BaseModel):
+    trade_date = models.DateField(verbose_name='交易日期')
+    concept = models.CharField(max_length=200, verbose_name='概念')
+    stock_code = models.CharField(max_length=20, verbose_name='股票代码')
+    stock_name = models.CharField(max_length=100, verbose_name='股票名称')
+    max_limit_up_days = models.IntegerField(verbose_name='高度板')
+
+    def __str__(self):
+        return f"{self.concept} - {self.stock_name} ({self.stock_code}) on {self.trade_date}"
+
+    class Meta:
+        db_table = table_prefix + 'concept_history_max_limit_up'
+        verbose_name = '概念历史高度板'
+        verbose_name_plural = verbose_name
+        unique_together = ('trade_date', 'concept')  # 添加唯一联合索引
+
+
+class DailyConceptLeaders(BaseModel):
+    trade_date = models.DateField(verbose_name='交易日期')
+    concept = models.CharField(max_length=200, verbose_name='概念')
+    stock_code = models.CharField(max_length=20, verbose_name='股票代码')
+    stock_name = models.CharField(max_length=100, verbose_name='股票名称')
+    highest_limit_up_days = models.IntegerField(verbose_name='高度板')
+    stock_count = models.IntegerField(verbose_name='股票数量')
+
+    def __str__(self):
+        return f"{self.concept} - {self.stock_name} ({self.stock_code}) on {self.trade_date}"
+
+    class Meta:
+        db_table = table_prefix + 'daily_concept_leaders'
+        verbose_name = '每日概念龙头'
+        verbose_name_plural = '每日概念龙头'
+        unique_together = ('trade_date', 'concept')  # 添加唯一联合索引

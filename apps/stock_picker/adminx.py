@@ -12,7 +12,6 @@ from django.core.cache import cache
 from apps.stock_picker.models import (
     StockAuction,
     StockLimitUpAuction,
-    StockLimitUpAuctionReal,
     StockAuctionConditions,
     AuctionAggressiveBuyingDetail
 )
