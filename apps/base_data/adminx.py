@@ -121,7 +121,8 @@ class StockConditionalPickerAdmin(BaseQueryAdmin):
 
 
 class ConceptHistoryMaxLimitUpAdmin(object):
-    list_display = ['trade_date', 'stock_code', 'stock_name', 'concept', 'max_limit_up_days', 'create_datetime']
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'concept', 'max_limit_up_days', 'related_data_breakthrough'
+        ,'related_data_broken','related_data_suppression', 'create_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'concept', 'max_limit_up_days']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'concept', 'max_limit_up_days']
     ordering = ['-trade_date', '-max_limit_up_days']

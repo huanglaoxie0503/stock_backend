@@ -203,13 +203,16 @@ class ConceptHistoryMaxLimitUp(BaseModel):
     stock_code = models.CharField(max_length=20, verbose_name='股票代码')
     stock_name = models.CharField(max_length=100, verbose_name='股票名称')
     max_limit_up_days = models.IntegerField(verbose_name='高度板')
+    related_data_breakthrough = models.CharField(max_length=100, null=True, blank=True, verbose_name='已破局')
+    related_data_broken = models.CharField(max_length=100, null=True, blank=True, verbose_name='破局')
+    related_data_suppression = models.CharField(max_length=100, null=True, blank=True, verbose_name='压制')
 
     def __str__(self):
         return f"{self.concept} - {self.stock_name} ({self.stock_code}) on {self.trade_date}"
 
     class Meta:
         db_table = table_prefix + 'concept_history_max_limit_up'
-        verbose_name = '概念历史高度板'
+        verbose_name = '概念破局'
         verbose_name_plural = verbose_name
         unique_together = ('trade_date', 'concept')  # 添加唯一联合索引
 
