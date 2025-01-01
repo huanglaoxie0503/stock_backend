@@ -192,7 +192,7 @@ class StockAuctionConditionsAdmin(BaseColorAdmin):
 
 class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_diff_20_25', 'vol_diff_24_25', 'chg_color',
-                    'remark', 'vol_25', 'vol_24', 'vol_20', 'buy_1_vol', 'is_limit_up_color']
+                    'is_remark_color', 'vol_25', 'vol_24', 'vol_20', 'buy_1_vol', 'is_limit_up_color']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_limit_up']
     search_fields = ['trade_date', 'stock_code', 'stock_name']
     ordering = ['-vol_diff_20_25']
@@ -260,6 +260,29 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
 
     # 设置短描述
     is_limit_up_color.short_description = '涨停状态'
+
+    def is_remark_color(self, obj):
+        # 获取 is_limit_up 属性的值
+        remark = getattr(obj, 'remark', None)
+
+        # 根据 is_limit_up 的值设置颜色和显示的文字
+        if remark == '首板涨停':
+            color = 'red'
+            formatted_text = "首板"
+        elif remark == '跌停':
+            color = 'green'
+            formatted_text = remark
+        elif remark == '炸板':
+            color = 'purple'
+            formatted_text = remark
+        else:
+            color = 'gray'
+            formatted_text = remark  # 或者你可以选择其他默认显示的文字
+
+        return format_html('<span style="color: {};">{}</span>', color, formatted_text)
+
+    # 设置短描述
+    is_remark_color.short_description = '备注'
 
 
 xadmin.site.register(StockAuction, StockAuctionAdmin)
