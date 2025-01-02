@@ -37,4 +37,4 @@ class ClsNewsAdmin(object):
     url_link.short_description = 'URL'  # 列标题
 
 
-xadmin.site.register(ClsNews, ClsNewsAdmin)
+# xadmin.site.register(ClsNews, ClsNewsAdmin)
