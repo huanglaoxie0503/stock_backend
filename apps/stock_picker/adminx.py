@@ -5,6 +5,7 @@
 import xadmin
 from datetime import datetime
 
+from django.db.models import Max
 from django.utils.html import format_html
 from loguru import logger
 from django.core.cache import cache
@@ -50,10 +51,9 @@ class StockAuctionAdmin(object):
 
 
 class StockLimitUpAuctionAdminOneToTwo(object):
-    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'limit_up_days', 'vol_ratio_color',
-                    'vol_ratio_oa_color', 'vol_diff_20_25', 'vol_diff_24_25', 'cap_color', 'open_price', 'pre_close',
-                    'model_name', 'last_limit_up_time', 'limit_up_reasons', 'is_ops', 'profit_chg', 'profit_chg_close',
-                    'cb', 'update_datetime']
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color',
+                    'vol_ratio_oa_color', 'vol_diff_20_25', 'vol_diff_24_25', 'profit_chg', 'cap_color',
+                    'limit_up_reasons', 'model_name', 'profit_chg_close', 'limit_up_days', 'is_ops', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     # 排序字段
@@ -67,8 +67,8 @@ class StockLimitUpAuctionAdminOneToTwo(object):
         qs = super().queryset()
         # 根据日期字段进行排序，并只取最新日期的数据
         latest_date = qs.latest('trade_date').trade_date
-        return qs.filter(trade_date=latest_date, limit_up_days__in=[1])
-        # return qs.filter(trade_date=latest_date)
+        return qs.filter(trade_date=latest_date, limit_up_days=1, cb__isnull=True)
+        # return qs.filter(trade_date=latest_date, limit_up_days__in=[1])
 
     # 天量比
     def vol_ratio_color(self, obj):
