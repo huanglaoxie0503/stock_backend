@@ -34,8 +34,8 @@ class StockLimitUpDetail(BaseModel):
                                      help_text="涨停类型")
     boards = models.CharField(max_length=20, null=True, blank=True, verbose_name="板数", help_text="板数")
     limit_up_days = models.IntegerField(default=1, verbose_name="涨停天数", help_text="涨停天数")
-    first_limit_up_time = models.TimeField(null=True, blank=True, verbose_name="首次涨停时间", help_text="首次涨停时间")
-    last_limit_up_time = models.TimeField(null=True, blank=True, verbose_name="最后一次涨停时间",
+    first_limit_up_time = models.TimeField(null=True, blank=True, verbose_name="涨停时间", help_text="首次涨停时间")
+    last_limit_up_time = models.TimeField(null=True, blank=True, verbose_name="最终涨停时间",
                                           help_text="最后一次涨停时间")
     limit_up_opening_nums = models.IntegerField(default=0, verbose_name='开板次数', help_text='涨停开板次数')
     limit_up_volume = models.BigIntegerField(null=True, blank=True, verbose_name='封单量(手)', help_text='涨停封单量')
