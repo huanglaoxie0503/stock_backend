@@ -39,8 +39,7 @@ class StockLimitUpDetail(BaseModel):
                                           help_text="最后一次涨停时间")
     limit_up_opening_nums = models.IntegerField(default=0, verbose_name='开板次数', help_text='涨停开板次数')
     limit_up_volume = models.BigIntegerField(null=True, blank=True, verbose_name='封单量(手)', help_text='涨停封单量')
-    limit_up_amount = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True,
-                                          verbose_name='封单金额(亿)', help_text='涨停封单金额')
+    limit_up_amount = models.BigIntegerField(null=True, blank=True, verbose_name='封单金额(元)', help_text='涨停封单金额')
     volume_rate = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True,
                                       verbose_name='涨停封单量占成交量比', help_text='涨停封单量占成交量比')
     cap = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True, verbose_name='市值(亿)',
@@ -49,6 +48,7 @@ class StockLimitUpDetail(BaseModel):
     cb = models.CharField(max_length=100, null=True, blank=True, verbose_name='可转债', help_text='可转债')
     limit_up_reasons_hot = models.CharField(max_length=100, null=True, blank=True, verbose_name='涨停归因', help_text='热门涨停归因')
     limit_up_reasons = models.CharField(max_length=255, null=True, blank=True, verbose_name="题材", help_text="涨停原因")
+    fund_attitude_score = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name='资金态度', help_text='资金态度评分')
 
     class Meta:
         db_table = table_prefix + "limit_up_detail"
