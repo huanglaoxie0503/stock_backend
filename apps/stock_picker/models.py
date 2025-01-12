@@ -73,6 +73,7 @@ class StockLimitUpAuction(BaseStockModel):
                                         help_text="涨停原因")
     model_name = models.CharField(max_length=50, null=True, blank=True, verbose_name="模型名称", help_text="模型名称")
     cb = models.CharField(max_length=50, null=True, blank=True, verbose_name="可转债", help_text="可转债")
+    fund_attitude_score = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name='资金态度', help_text='资金态度评分')
 
     class Meta:
         db_table = 'stock_limit_up_series'
