@@ -5,10 +5,7 @@
 import xadmin
 from datetime import datetime
 
-from django.db.models import Max
 from django.utils.html import format_html
-from loguru import logger
-from django.core.cache import cache
 
 from apps.stock_picker.models import (
     StockAuction,
