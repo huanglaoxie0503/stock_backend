@@ -230,7 +230,7 @@ class DailyConceptLeaders(BaseModel):
 
     class Meta:
         db_table = table_prefix + 'daily_concept_leaders'
-        verbose_name = '每日概念龙头'
+        verbose_name = '概念龙头'
         verbose_name_plural = '每日概念龙头'
         unique_together = ('trade_date', 'concept')  # 添加唯一联合索引
 
