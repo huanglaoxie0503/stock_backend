@@ -267,10 +267,15 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
 
     def queryset(self):
         qs = super().queryset()
+
         # 根据日期字段进行排序，并只取最新日期的数据
         latest_date = qs.latest('trade_date').trade_date
+
         # 按最新日期筛选数据，并按 limit_up_order_amount 字段倒序排序
-        return qs.filter(trade_date=latest_date)
+        # 添加过滤条件：open_chg（字符串类型）大于 "0"
+        qs = qs.filter(trade_date=latest_date, open_chg__gt="0")
+
+        return qs
 
     def trade_date_color(self, obj):
         current_date = datetime.now().date()
