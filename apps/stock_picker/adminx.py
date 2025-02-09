@@ -9,6 +9,7 @@ from django.utils.html import format_html
 
 from apps.stock_picker.models import (
     StockAuction,
+    StockTwoToThree,
     StockLimitUpAuction,
     StockAuctionConditions,
     AuctionAggressiveBuyingDetail
@@ -47,9 +48,10 @@ class StockAuctionAdmin(object):
     trade_date_color.short_description = '交易日'
 
 
-class StockLimitUpAuctionAdminOneToTwo(object):
+class StockLimitUpAuctionAdminOneToTwoAdmin(object):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color',
-                    'vol_ratio_oa_color', 'fund_attitude_score', 'cap_color', 'vol_diff_20_25', 'vol_diff_24_25', 'profit_chg',
+                    'vol_ratio_oa_color', 'fund_attitude_score', 'cap_color', 'vol_diff_20_25', 'vol_diff_24_25',
+                    'profit_chg',
                     'limit_up_reasons', 'model_name', 'profit_chg_close', 'limit_up_days', 'is_ops', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
@@ -115,12 +117,72 @@ class StockLimitUpAuctionAdminOneToTwo(object):
     trade_date_color.short_description = '交易日'
 
 
-class StockLimitUpAuctionAdminTwoToThree(StockLimitUpAuctionAdminOneToTwo):
+class StockTwoToThreeAdmin(object):
+    list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color',
+                    'vol_ratio_oa_color', 'fund_attitude_score', 'cap_color', 'vol_diff_20_25', 'vol_diff_24_25',
+                    'profit_chg',
+                    'limit_up_reasons', 'model_name', 'profit_chg_close', 'limit_up_days', 'is_ops', 'update_datetime']
+    list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
+    search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
+    # 排序字段
+    ordering = ['-trade_date', '-limit_up_days', '-vol_diff_20_25']
+    list_per_page = 15
+    list_display_links = ['trade_date']
+    list_editable = []
+    model_icon = 'fa fa-thumbs-o-up'
+
     def queryset(self):
         qs = super().queryset()
         # 根据日期字段进行排序，并只取最新日期的数据
         latest_date = qs.latest('trade_date').trade_date
-        return qs.filter(trade_date=latest_date, limit_up_days__in=[1])
+        # 添加 cap__lte=30 条件到过滤器中
+        return qs.filter(
+            trade_date=latest_date,
+            limit_up_days=2,
+            cb__isnull=True,
+            cap__lte=60  # lte 表示小于等于 (less than or equal to)
+        )
+
+    def vol_ratio_color(self, obj):
+        thresholds = [
+            lambda x: 0.09 < x <= 0.20,
+            lambda x: x > 0.20
+        ]
+        colors = ['red', 'blue']
+        return format_color(obj.pre_open_vol_ratio, thresholds, colors)
+
+    vol_ratio_color.short_description = '天量比'
+
+    # 分量比
+    def vol_ratio_oa_color(self, obj):
+        thresholds = [
+            lambda x: 0.70 <= x <= 2.0,
+            lambda x: x > 2.0
+        ]
+        colors = ['red', 'blue']
+        return format_color(obj.pre_open_max_vol_ratio, thresholds, colors)
+
+    vol_ratio_oa_color.short_description = '分量比'
+
+    # 市值(亿)
+    def cap_color(self, obj):
+        thresholds = [
+            lambda x: x < 30
+        ]
+        colors = ['red']
+        return format_color(obj.cap, thresholds, colors)
+
+    cap_color.short_description = '市值(亿)'
+
+    def trade_date_color(self, obj):
+        current_date = datetime.now().date()
+        thresholds = [
+            lambda x: x == current_date
+        ]
+        colors = ['red']
+        return format_color(obj.trade_date, thresholds, colors)
+
+    trade_date_color.short_description = '交易日'
 
 
 class StockAuctionConditionsAdmin(BaseColorAdmin):
@@ -288,7 +350,7 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
 
 
 xadmin.site.register(StockAuction, StockAuctionAdmin)
-xadmin.site.register(StockLimitUpAuction, StockLimitUpAuctionAdminOneToTwo)
-# xadmin.site.register(StockLimitUpAuctionReal, StockLimitUpAuctionAdminTwoToThree)
+xadmin.site.register(StockLimitUpAuction, StockLimitUpAuctionAdminOneToTwoAdmin)
+xadmin.site.register(StockTwoToThree, StockTwoToThreeAdmin)
 xadmin.site.register(StockAuctionConditions, StockAuctionConditionsAdmin)
 xadmin.site.register(AuctionAggressiveBuyingDetail, AuctionAggressiveBuyingDetailAdmin)

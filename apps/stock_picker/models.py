@@ -87,23 +87,22 @@ class StockLimitUpAuction(BaseStockModel):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
 
 
-class StockLimitUpAuctionReal(BaseStockModel):
-    limit_up_opening_nums = models.IntegerField(default=0, blank=True, verbose_name='开板次数',
-                                                help_text='涨停开板次数')
+class StockTwoToThree(BaseStockModel):
+    limit_up_opening_nums = models.IntegerField(default=0, blank=True, verbose_name='开板次数', help_text='涨停开板次数')
     last_limit_up_time = models.TimeField(null=True, blank=True, verbose_name='涨停时间', help_text='最后涨停时间')
     limit_up_days = models.IntegerField(default=1, blank=True, verbose_name='连板数', help_text='连板天数')
-    limit_up_reasons = models.CharField(max_length=225, null=True, blank=True, verbose_name="涨停归因",
-                                        help_text="涨停原因")
+    limit_up_reasons = models.CharField(max_length=225, null=True, blank=True, verbose_name="涨停归因", help_text="涨停原因")
     model_name = models.CharField(max_length=50, null=True, blank=True, verbose_name="模型名称", help_text="模型名称")
     cb = models.CharField(max_length=50, null=True, blank=True, verbose_name="可转债", help_text="可转债")
+    fund_attitude_score = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True,
+                                              verbose_name='资金态度', help_text='资金态度评分')
 
     class Meta:
-        db_table = 'stock_limit_up_series_real'
+        db_table = 'stock_two_to_three'
         verbose_name = "二进三"
         verbose_name_plural = verbose_name
         constraints = [
-            models.UniqueConstraint(fields=['trade_date', 'stock_code'],
-                                    name='unique_trade_date_stock_limit_up_series_real')]
+            models.UniqueConstraint(fields=['trade_date', 'stock_code'], name='unique_trade_date_stock_two_to_three')]
 
     def __str__(self):
         return f"{self.trade_date} - 股票名称:{self.stock_name}"
