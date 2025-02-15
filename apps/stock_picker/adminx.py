@@ -71,7 +71,7 @@ class StockLimitUpAuctionAdminOneToTwoAdmin(object):
             trade_date=latest_date,
             limit_up_days=1,
             cb__isnull=True,
-            cap__lte=30  # lte 表示小于等于 (less than or equal to)
+            cap__lte=70  # lte 表示小于等于 (less than or equal to)
         )
 
     # 天量比
