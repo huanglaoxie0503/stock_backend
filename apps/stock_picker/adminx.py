@@ -273,7 +273,13 @@ class AuctionAggressiveBuyingDetailAdmin(BaseColorAdmin):
 
         # 按最新日期筛选数据，并按 limit_up_order_amount 字段倒序排序
         # 添加过滤条件：open_chg（字符串类型）大于 "0"
-        qs = qs.filter(trade_date=latest_date, open_chg__gt="0")
+        # 添加过滤条件：stock_code 不以 30 或 688 开头
+        qs = qs.filter(
+            trade_date=latest_date,
+            open_chg__gt="0"
+        ).exclude(
+            stock_code__regex=r'^(30|688)'
+        )
 
         return qs
 
