@@ -50,13 +50,13 @@ class StockAuctionAdmin(object):
 
 class StockLimitUpAuctionAdminOneToTwoAdmin(object):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color',
-                    'vol_ratio_oa_color', 'fund_attitude_score', 'cap_color', 'vol_diff_20_25', 'vol_diff_24_25',
+                    'vol_ratio_oa_color', 'fund_attitude_score', 'cap_color', 'vol_diff_20_25',
                     'profit_chg',
                     'limit_up_reasons', 'model_name', 'profit_chg_close', 'limit_up_days', 'is_ops', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     # 排序字段
-    ordering = ['-trade_date', '-limit_up_days', '-vol_diff_20_25']
+    ordering = ['-trade_date', '-profit_chg']
     list_per_page = 15
     list_display_links = ['trade_date']
     list_editable = []
@@ -71,7 +71,8 @@ class StockLimitUpAuctionAdminOneToTwoAdmin(object):
             trade_date=latest_date,
             limit_up_days=1,
             cb__isnull=True,
-            cap__lte=70  # lte 表示小于等于 (less than or equal to)
+            open_price__lte=20,
+            cap__lte=60  # lte 表示小于等于 (less than or equal to)
         )
 
     # 天量比

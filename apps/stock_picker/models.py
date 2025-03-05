@@ -26,8 +26,7 @@ class BaseStockModel(BaseModel):
     cap = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='市值(亿)',
                               help_text='自由流通市值')
     is_ops = models.BooleanField(default=False, verbose_name="是否操作", help_text="是否操作")
-    profit_chg = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, verbose_name='竞价涨幅',
-                                     help_text='竞价盈亏')
+    profit_chg = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, verbose_name='竞价涨幅',help_text='竞价盈亏')
     profit_chg_close = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True,
                                            verbose_name='收盘盈亏', help_text='收盘时的盈亏')
     vol_diff_20_25 = models.IntegerField(default=0, verbose_name='T_20(万手)', help_text='20-25量差(万手)')
