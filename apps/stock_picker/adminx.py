@@ -120,7 +120,7 @@ class StockLimitUpAuctionAdminOneToTwoAdmin(object):
 
 class StockTwoToThreeAdmin(object):
     list_display = ['trade_date_color', 'stock_code', 'stock_name', 'vol_ratio_color',
-                    'vol_ratio_oa_color', 'fund_attitude_score', 'cap_color', 'vol_diff_20_25', 'vol_diff_24_25',
+                    'vol_ratio_oa_color', 'fund_attitude_score', 'cap_color', 'vol_diff_20_25',
                     'profit_chg',
                     'limit_up_reasons', 'model_name', 'profit_chg_close', 'limit_up_days', 'is_ops', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
