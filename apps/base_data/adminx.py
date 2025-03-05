@@ -21,7 +21,7 @@ from apps.base_data.models import (
 
 
 class StockLimitUpDetailAdmin(BaseQueryAdmin):
-    list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_days_color', 'fund_attitude_score_color', 'cap', 'limit_up_reasons_hot', 'limit_up_reasons', 'limit_up_type', 'first_limit_up_time', 'cb', 'update_datetime']
+    list_display = ['trade_date', 'stock_code', 'stock_name', 'limit_up_reasons_hot', 'limit_up_reasons', 'limit_up_days_color', 'fund_attitude_score_color', 'cap', 'limit_up_type', 'first_limit_up_time', 'cb', 'update_datetime']
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'limit_up_days', 'fund_attitude_score', 'cap', 'limit_up_reasons_hot', 'limit_up_reasons']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'limit_up_days', 'fund_attitude_score', 'cap', 'limit_up_reasons_hot', 'limit_up_reasons']
     ordering = ['-limit_up_days']
