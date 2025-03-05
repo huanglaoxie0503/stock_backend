@@ -126,7 +126,7 @@ class StockTwoToThreeAdmin(object):
     list_filter = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     search_fields = ['trade_date', 'stock_code', 'stock_name', 'is_ops', 'limit_up_days', 'limit_up_reasons']
     # 排序字段
-    ordering = ['-trade_date', '-limit_up_days', '-vol_diff_20_25']
+    ordering = ['-trade_date', '-profit_chg']
     list_per_page = 15
     list_display_links = ['trade_date']
     list_editable = []
